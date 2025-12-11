@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker-compose --env-file .env.dev up -d
+
+./gradlew clean build
+
+

@@ -1,0 +1,108 @@
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+}
+
+group = 'br.db.tec'
+version = '0.0.1-SNAPSHOT'
+description = 'E-Commerce API'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ==== Spring Boot Starters (runtime) ====
+    implementation 'org.springframework.boot:spring-boot-starter-web'           // Web + MVC
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'      // JPA/Hibernate
+    implementation 'org.springframework.boot:spring-boot-starter-security'      // Security
+
+    // ==== OpenAPI/Swagger ====
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+
+    // ==== MapStruct + Lombok ====
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    // ==== DevTools (somente em dev) ====
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // ==== Banco de Dados ====
+    runtimeOnly 'org.postgresql:postgresql:42.7.3'
+
+    // ==== Testes ====
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'      // JUnit 5, Mockito, etc.
+    testImplementation 'org.springframework.security:spring-security-test'       // Suporte a testes de Security
+
+    // Testcontainers (integração com Postgres real em testes)
+    testImplementation 'org.testcontainers:testcontainers:1.20.2'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.2'
+    testImplementation 'org.testcontainers:postgresql:1.20.2'
+
+    implementation("org.flywaydb:flyway-core")
+    
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// ==== Jacoco ====
+jacoco {
+    toolVersion = "0.8.11" 
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy tasks.jacocoTestReport 
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.36
+            }
+        }
+        // Exemplo opcional de regra por classe/pacote (ajuste conforme necessidade)
+        // rule {
+        //     element = 'CLASS'
+        //     includes = ['br.db.tec.*']
+        //     limit {
+        //         counter = 'LINE'
+        //         value = 'COVEREDRATIO'
+        //         minimum = 0.80
+        //     }
+        // }
+    }
+}
+
+tasks.check {
+    dependsOn tasks.jacocoTestCoverageVerification
+}
+

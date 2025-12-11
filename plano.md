@@ -19,6 +19,7 @@
 **Implementação**
 - Pacotes: `domain`, `repository`, `service`, `web/controller`, `web/dto`, `mapper`, `config`, `exception`.
 - Definir DoD e checklist de PR.
+DOD -> [Build ok, Cobertura Ok, Teste passando, funcionalidade Ok]
 
 **Teste**
 - Build verde e checagem estática (lint/format).

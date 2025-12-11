@@ -1,0 +1,27 @@
+
+spring:
+  application:
+    name: e-commerce
+  profiles:
+    active: dev
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1.0.0
+    baseline-description: Initial version
+
+    connect-retries: 10
+    schemas: TEST_SCHEMA
+    table: flyway_schema_history
+
+logging:
+  level:
+    root: INFO
+

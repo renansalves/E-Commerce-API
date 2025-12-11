@@ -6,10 +6,9 @@ spring:
     active: dev
 
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/ecommerce_dev
+    username: devuser
+    password: devpass
 
   flyway:
     enabled: true

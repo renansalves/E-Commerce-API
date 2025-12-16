@@ -32,6 +32,8 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-
-### VS Code ###
-.vscode/
+Makefile
+*.puml
+*.dot
+*.out
+Makefiile

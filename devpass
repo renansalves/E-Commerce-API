@@ -1,4 +1,0 @@
- id | email | password_hash | role | enabled | created_at 
-----+-------+---------------+------+---------+------------
-(0 rows)
-

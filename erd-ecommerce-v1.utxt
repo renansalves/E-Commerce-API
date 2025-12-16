@@ -1,0 +1,37 @@
+                                                          ┌────────────────────────────────┐                              
+                                                          │👤 ECOMERCE.users               │                              
+                                                          ├────────────────────────────────┤                              
+                                                          │+ id : BIGSERIAL <<PK>>         │                              
+                                                          │email : TEXT <<UNIQUE>>         │                              
+                                                          │password_hash : TEXT            │                              
+                                                          │role : ECOMERCE.user_role_enum  │                              
+                                                          │enabled : BOOLEAN [TRUE]        │                              
+                                                          │created_at : TIMESTAMPTZ [now()]│                              
+                                                          └────────────────────────────────┘                              
+                                                                                                                          
+                                                                                                                          
+                                    ┌────────────────────────────────┐                                                                                         
+                                    │🛍️ ECOMERCE.product             │                                        ┌───────────────────────────────────────────────┐
+┌────────────────────────────────┐  ├────────────────────────────────┤   ┌────────────────────────────────┐   │🧾 ECOMERCE.orders                             │
+│🏷️ ECOMERCE.category            │  │+ id : BIGSERIAL <<PK>>         │   │🛒 ECOMERCE.carts               │   ├───────────────────────────────────────────────┤
+├────────────────────────────────┤  │sku : TEXT <<UNIQUE>>           │   ├────────────────────────────────┤   │+ id : BIGSERIAL <<PK>>                        │
+│+ id : BIGSERIAL <<PK>>         │  │name : TEXT                     │   │+ id : BIGSERIAL <<PK>>         │   │user_id : BIGINT <<FK>>                        │
+│name : TEXT                     │  │description : TEXT              │   │user_id : BIGINT <<UNIQUE,FK>>  │   │status : ECOMERCE.order_status_enum ['PENDING']│
+│description : TEXT              │  │price_cents : BIGINT (>=0)      │   │created_at : TIMESTAMPTZ [now()]│   │total_cents : BIGINT (>=0)                     │
+│created_at : TIMESTAMPTZ [now()]│  │currency : TEXT ['BRL']         │   │updated_at : TIMESTAMPTZ        │   │created_at : TIMESTAMPTZ [now()]               │
+└────────────────────────────────┘  │active : BOOLEAN [TRUE]         │   └────────────────────────────────┘   │updated_at : TIMESTAMPTZ                       │
+                                    │created_at : TIMESTAMPTZ [now()]│                                        └───────────────────────────────────────────────┘
+                                    │updated_at : TIMESTAMPTZ        │                                                                                         
+                                    └────────────────────────────────┘                                                                                         
+                                                                                                                                                               
+                                                               ┌──────────────────────────────────┐                                                            
+                                                               │🧺 ECOMERCE.cart_items            │           ┌────────────────────────────────┐               
+                                                               ├──────────────────────────────────┤           │📦 ECOMERCE.order_items         │               
+                 ┌────────────────────────────────┐            │+ id : BIGSERIAL <<PK>>           │           ├────────────────────────────────┤               
+                 │🔗 ECOMERCE.product_category    │            │cart_id : BIGINT <<FK>>           │           │+ id : BIGSERIAL <<PK>>         │               
+                 ├────────────────────────────────┤            │product_id : BIGINT <<FK>>        │           │order_id : BIGINT <<FK>>        │               
+                 │+ product_id : BIGINT <<PK,FK>> │            │quantity : INTEGER (>0)           │           │product_id : BIGINT <<FK>>      │               
+                 │+ category_id : BIGINT <<PK,FK>>│            │unit_price_snapshot : BIGINT (>=0)│           │quantity : INTEGER (>0)         │               
+                 └────────────────────────────────┘            │created_at : TIMESTAMPTZ [now()]  │           │unit_price : BIGINT (>=0)       │               
+                                                               │UNIQUE(cart_id, product_id)       │           │created_at : TIMESTAMPTZ [now()]│               
+                                                               └──────────────────────────────────┘           └────────────────────────────────┘               

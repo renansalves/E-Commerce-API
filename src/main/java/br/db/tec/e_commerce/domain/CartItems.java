@@ -19,7 +19,7 @@ import lombok.Data;
 @Entity
 @Table(
   name = "cart_items",
-  schema = "ecomerce"
+  schema = "ecommerce"
 )
 @Data
 public class CartItems {
@@ -49,10 +49,13 @@ public class CartItems {
   private int quantity;
 
   @Min(0)
-  @Column(nullable = false)
+  @Column(
+  name = "unit_price_snapshot",
+  nullable = false
+  )
   private Double unitPrice;
 
-  @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+  @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime createdAt;
 
 }

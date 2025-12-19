@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
   name = "category",
-  schema = "ecomerce"
+  schema = "ecommerce"
 )
 @Data
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class Category {
   private String name;
   @Column(nullable = false)
   private String decription;
-  @Column(nullable=false, columnDefinition = "TIMESTAMPTZ")
+  @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime createdAt;
    
 }

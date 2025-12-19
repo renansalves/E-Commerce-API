@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,10 +19,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
   name = "users",
-  schema = "ecomerce"
+  schema = "ecommerce"
 )
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Users {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +44,7 @@ public class Users {
   @Column(nullable = false)
   private Boolean enabled = true;
 
-  @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+  @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime createdAt;
 
 }

@@ -18,7 +18,7 @@ import lombok.Data;
 @Entity
 @Table(
   name = "product",
-  schema = "ecomerce",
+  schema = "ecommerce",
   uniqueConstraints = {
     @UniqueConstraint(name = "uk_product_sku", columnNames = {"sku"})
   },
@@ -29,20 +29,6 @@ import lombok.Data;
 )
 @Data
 public class Product {
-/*
-  CREATE TABLE IF NOT EXISTS ECOMERCE.product (
-  id              BIGSERIAL PRIMARY KEY,
-  sku             TEXT        NOT NULL UNIQUE,
-  name            TEXT        NOT NULL,
-  description     TEXT,
-  price_cents     BIGINT      NOT NULL CHECK (price_cents >= 0),
-  currency        TEXT        NOT NULL DEFAULT 'BRL',
-  active          BOOLEAN     NOT NULL DEFAULT TRUE,
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at      TIMESTAMPTZ
-);
-
- */
 
  @Id
  @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,9 +44,8 @@ public class Product {
 
  @NotNull
  @Min(0)
- @NotBlank
  @Column(nullable = false )
- Double priceCents;
+ Long priceCents;
 
  @NotBlank
  @Column(nullable = false)
@@ -70,11 +55,10 @@ public class Product {
  @Column(nullable = false)
  private Boolean active = true;
 
- @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+ @Column(columnDefinition = "TIMESTAMPTZ")
  private OffsetDateTime createdAt;
 
- @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+ @Column(columnDefinition = "TIMESTAMPTZ")
  private OffsetDateTime updatedAt;
-
 
 }

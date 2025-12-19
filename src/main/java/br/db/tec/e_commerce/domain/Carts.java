@@ -17,8 +17,8 @@ import lombok.Data;
 
 @Entity
 @Table(
-  name = "cart",
-  schema = "ecomerce"
+  name = "carts",
+  schema = "ecommerce"
 )
 @Data
 public class Carts {
@@ -30,12 +30,12 @@ public class Carts {
   @JoinColumn(
       name ="user_id",
       nullable = false,
-      foreignKey = @ForeignKey(name = "fk_user_id")
+      foreignKey = @ForeignKey(name = "fk_users_id")
       )
-  private Long user_id;
+  private Users userId;
 
-  @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+  @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime createdAt;
-  @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+  @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime updatedAt;
 }

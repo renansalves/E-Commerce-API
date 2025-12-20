@@ -1,6 +1,12 @@
-package br.db.tec.e_commerce.repository;
+package br.db.tec.e_commerce.RepositoryTest;
 
-import br.db.tec.e_commerce.domain.*;
+import br.db.tec.e_commerce.domain.user.UserRole;
+import br.db.tec.e_commerce.domain.user.Users;
+import br.db.tec.e_commerce.domain.cart.CartItems;
+import br.db.tec.e_commerce.domain.cart.Carts;
+import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.repository.CartItemsRepository;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +29,20 @@ class CartItemsRepositoryTest {
     @Test
     @DisplayName("Should save cart item with relationships")
     void shouldSaveCartItem() {
-        // 1. Setup User
         Users user = new Users();
         user.setEmail("cartuser@test.com");
-        user.setPasswordHash("123");
+        user.setPassword("123");
         user.setRole(UserRole.CLIENTE);
         user.setEnabled(true);
         user.setCreatedAt(OffsetDateTime.now());
         entityManager.persist(user);
 
-        // 2. Setup Cart
         Carts cart = new Carts();
-        cart.setUserId(user);
+        cart.setUser(user);
         cart.setCreatedAt(OffsetDateTime.now());
         cart.setUpdatedAt(OffsetDateTime.now());
         entityManager.persist(cart);
 
-        // 3. Setup Product
         Product product = new Product();
         product.setSku("CART-PROD-01");
         product.setName("Mouse");
@@ -50,12 +53,11 @@ class CartItemsRepositoryTest {
 
         entityManager.flush();
 
-        // 4. Teste: Criar Item
         CartItems item = new CartItems();
         item.setCarts(cart);
         item.setProduct(product);
         item.setQuantity(2);
-        item.setUnitPrice(1000.0); // Nota: Sua entidade usa Double, SQL usa BIGINT. Cuidado com conversão.
+        item.setUnitPrice(1000L); 
         item.setCreatedAt(OffsetDateTime.now());
 
         CartItems savedItem = cartItemsRepository.save(item);

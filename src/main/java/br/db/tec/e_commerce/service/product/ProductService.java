@@ -1,0 +1,76 @@
+package br.db.tec.e_commerce.service.product;
+
+import java.time.OffsetDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.dto.product.ProductRequestDTO;
+import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
+import br.db.tec.e_commerce.mapper.product.ProductMapper;
+import br.db.tec.e_commerce.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+public class ProductService {
+
+  @Autowired
+  private ProductRepository productRepository;
+
+  @Autowired
+  private ProductMapper productMapper;
+
+  public ProductResponseDTO create(ProductRequestDTO dto) {
+    // 1. Converte DTO para Entidade
+    Product product = productMapper.toEntity(dto);
+
+    // 2. Salva no banco
+    product = productRepository.save(product);
+
+    // 3. Retorna o DTO de resposta
+    return productMapper.toResponseDTO(product);
+  }
+
+  public ProductResponseDTO update(Long id, ProductRequestDTO dto) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+    // Atualiza os campos da entidade existente com os dados do DTO
+    productMapper.updateEntityFromDto(dto, product);
+
+    return productMapper.toResponseDTO(productRepository.save(product));
+  }
+
+  public Page<ProductResponseDTO> listAll(Pageable pageable) {
+    return productRepository.findAll(pageable)
+        .map(productMapper::toResponseDTO);
+
+  }
+
+  @Transactional
+  public void decreaseStock(Long productId, Integer quantity) {
+    Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+    if (product.getStockQuantity() < quantity) {
+      throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
+    }
+
+    product.setStockQuantity(product.getStockQuantity() - quantity);
+    product.setUpdatedAt(OffsetDateTime.now());
+    productRepository.save(product);
+  }
+
+  public void delete(Long id) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+    product.setActive(false);
+    product.setUpdatedAt(OffsetDateTime.now());
+    productRepository.save(product);
+  }
+}

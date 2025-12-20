@@ -1,4 +1,4 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.product;
 
 import java.time.OffsetDateTime;
 
@@ -51,6 +51,8 @@ public class Product {
  @Column(nullable = false)
  String currency = "BRL";
 
+ @Column(nullable = false)
+ private Integer stockQuantity = 0;
  @NotNull
  @Column(nullable = false)
  private Boolean active = true;

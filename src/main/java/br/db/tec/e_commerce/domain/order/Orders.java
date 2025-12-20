@@ -1,9 +1,8 @@
-// **Implementação**: `Order(id, user_id, status enum, total, timestamps)` / `OrderItem(order_id, product_id, quantity, unitPrice)`
-
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.order;
 
 import java.time.OffsetDateTime;
 
+import br.db.tec.e_commerce.domain.user.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

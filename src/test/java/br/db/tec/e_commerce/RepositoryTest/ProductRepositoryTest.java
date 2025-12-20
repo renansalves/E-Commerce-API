@@ -1,6 +1,6 @@
 package br.db.tec.e_commerce.RepositoryTest;
 
-import br.db.tec.e_commerce.domain.Product;
+import br.db.tec.e_commerce.domain.product.Product;
 import br.db.tec.e_commerce.repository.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

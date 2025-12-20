@@ -1,9 +1,10 @@
-package br.db.tec.e_commerce.repository;
+package br.db.tec.e_commerce.RepositoryTest;
 
-import br.db.tec.e_commerce.domain.OrderStatus;
-import br.db.tec.e_commerce.domain.Orders;
-import br.db.tec.e_commerce.domain.Users; // Assumindo existência
-import br.db.tec.e_commerce.domain.UserRole; // Assumindo existência
+import br.db.tec.e_commerce.domain.order.OrderStatus;
+import br.db.tec.e_commerce.domain.order.Orders;
+import br.db.tec.e_commerce.domain.user.Users;
+import br.db.tec.e_commerce.repository.OrdersRepository;
+import br.db.tec.e_commerce.domain.user.UserRole; 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.user;
 
 import java.time.OffsetDateTime;
 
@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Users {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -34,8 +35,8 @@ public class Users {
   private String email;
 
   @NotBlank
-  @Column(nullable = false, unique = true)
-  private String passwordHash;
+  @Column(name = "password_hash", nullable = false, unique = true)
+  private String password;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, columnDefinition = ("ecomerce.user_role_enum"))

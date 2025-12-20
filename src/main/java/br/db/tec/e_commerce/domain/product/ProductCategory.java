@@ -1,5 +1,6 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.product;
 
+import br.db.tec.e_commerce.domain.category.Category;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;

@@ -1,0 +1,25 @@
+package br.db.tec.e_commerce.mapper.order;
+
+import java.util.List;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import br.db.tec.e_commerce.domain.order.OrderItems;
+import br.db.tec.e_commerce.domain.order.Orders;
+import br.db.tec.e_commerce.dto.order.OrderResponseDTO;
+import br.db.tec.e_commerce.dto.order.OrderItemResponseDTO;
+
+@Mapper(componentModel = "spring")
+public interface OrderMapper {
+  
+  @Mapping(target = "status", source = "order.orderStatus")
+  @Mapping(target = "items", source = "orderItems")
+  OrderResponseDTO toResponseDTO(Orders order,List<OrderItems> orderItems);
+
+  @Mapping(target = "productId", source = "product.id")
+  @Mapping(target = "productName", source = "product.name")
+  @Mapping(target = "unitPriceSnapshot", source = "unitPrice")
+  OrderItemResponseDTO tOrderItemResponseDTO(OrderItems item);
+
+}

@@ -1,22 +1,22 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.order;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+import br.db.tec.e_commerce.domain.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table(
@@ -56,7 +56,7 @@ public class OrderItems {
 
     @DecimalMin("0.0")
     @Column(nullable = false)
-    private BigDecimal unitPrice;
+    private Long unitPrice;
 
     @Column(columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;

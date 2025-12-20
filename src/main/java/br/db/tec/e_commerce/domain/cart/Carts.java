@@ -1,7 +1,8 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.cart;
 
 import java.time.OffsetDateTime;
 
+import br.db.tec.e_commerce.domain.user.Users;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,49 +14,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Entity
 @Table(
-  name = "cart_items",
+  name = "carts",
   schema = "ecommerce"
 )
 @Data
-public class CartItems {
-
+public class Carts {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(
-      name ="cart_id",
+      name ="user_id",
       nullable = false,
-      foreignKey = @ForeignKey(name = "fk_carts_id")
+      foreignKey = @ForeignKey(name = "fk_users_id")
       )
-  private Carts carts;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name ="product_id",
-      nullable = false,
-      foreignKey = @ForeignKey(name = "fk_product_id")
-      )
-  private Product product;
-
-  @Min(0)
-  @Column(nullable = false)
-  private int quantity;
-
-  @Min(0)
-  @Column(
-  name = "unit_price_snapshot",
-  nullable = false
-  )
-  private Double unitPrice;
+  private Users user;
 
   @Column(columnDefinition = "TIMESTAMPTZ")
   private OffsetDateTime createdAt;
-
+  @Column(columnDefinition = "TIMESTAMPTZ")
+  private OffsetDateTime updatedAt;
 }

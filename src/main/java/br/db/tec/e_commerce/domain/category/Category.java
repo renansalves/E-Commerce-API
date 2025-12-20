@@ -1,4 +1,4 @@
-package br.db.tec.e_commerce.domain;
+package br.db.tec.e_commerce.domain.category;
 
 import java.time.OffsetDateTime;
 

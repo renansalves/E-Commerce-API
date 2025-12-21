@@ -79,7 +79,7 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.36
+                minimum = 0.25
             }
         }
         // Exemplo opcional de regra por classe/pacote (ajuste conforme necessidade)

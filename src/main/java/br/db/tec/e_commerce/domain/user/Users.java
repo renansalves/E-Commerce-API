@@ -46,6 +46,6 @@ public class Users {
   private Boolean enabled = true;
 
   @Column(columnDefinition = "TIMESTAMPTZ")
-  private OffsetDateTime createdAt;
+  private OffsetDateTime createdAt = OffsetDateTime.now();
 
 }

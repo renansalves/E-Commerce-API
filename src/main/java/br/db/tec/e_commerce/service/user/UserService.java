@@ -1,6 +1,7 @@
 package br.db.tec.e_commerce.service.user;
 
 import br.db.tec.e_commerce.domain.user.Users;
+import br.db.tec.e_commerce.dto.auth.LoginRequestDTO;
 import br.db.tec.e_commerce.dto.user.UserRegisterRequestDTO;
 import br.db.tec.e_commerce.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -19,6 +20,8 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private TokenService tokenService; 
+
     @Transactional
     public void register(UserRegisterRequestDTO dto) {
         if (userRepository.existsByEmail(dto.email())) {
@@ -29,7 +32,6 @@ public class UserService {
         user.setEmail(dto.email());
         user.setRole(dto.role());
         
-        // Criptografando a senha antes de salvar
         user.setPassword(passwordEncoder.encode(dto.password()));
 
         userRepository.save(user);
@@ -38,5 +40,17 @@ public class UserService {
     public Users findById(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
+    public String authenticate(LoginRequestDTO dto){
+
+      Users user = userRepository.findByEmail(dto.email())
+        .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos"));
+      if (!passwordEncoder.matches(dto.password(), user.getPassword())){
+        throw new RuntimeException("E-mail ou senha inválida.");
+      }
+
+      return tokenService.generateToken(user);
+
     }
 }

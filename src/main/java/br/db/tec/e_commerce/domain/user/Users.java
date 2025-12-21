@@ -2,6 +2,9 @@ package br.db.tec.e_commerce.domain.user;
 
 import java.time.OffsetDateTime;
 
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,6 +43,7 @@ public class Users {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, columnDefinition = ("ecomerce.user_role_enum"))
+  @JdbcType(PostgreSQLEnumJdbcType.class)
   private UserRole role;
 
   @Column(nullable = false)

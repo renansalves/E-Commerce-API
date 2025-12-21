@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.db.tec.e_commerce.domain.user.UserRole;
+import br.db.tec.e_commerce.domain.user.Users;
 import br.db.tec.e_commerce.dto.user.UserRegisterRequestDTO;
 import br.db.tec.e_commerce.repository.UserRepository;
 import br.db.tec.e_commerce.service.user.UserService;
@@ -42,7 +43,7 @@ class UserServiceIntegrationTest {
         userService.register(dto);
 
         // Assert
-        var savedUser = userRepository.findByEmail("integracao@db.com").orElseThrow();
+        Users savedUser = userRepository.findByEmail("integracao@db.com").orElseThrow();
         assertNotNull(savedUser.getId());
         assertNotEquals("senhaForte123", savedUser.getPassword());
     }

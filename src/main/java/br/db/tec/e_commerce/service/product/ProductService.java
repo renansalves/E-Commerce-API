@@ -26,13 +26,10 @@ public class ProductService {
   private ProductMapper productMapper;
 
   public ProductResponseDTO create(ProductRequestDTO dto) {
-    // 1. Converte DTO para Entidade
     Product product = productMapper.toEntity(dto);
 
-    // 2. Salva no banco
     product = productRepository.save(product);
 
-    // 3. Retorna o DTO de resposta
     return productMapper.toResponseDTO(product);
   }
 
@@ -40,7 +37,6 @@ public class ProductService {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
 
-    // Atualiza os campos da entidade existente com os dados do DTO
     productMapper.updateEntityFromDto(dto, product);
 
     return productMapper.toResponseDTO(productRepository.save(product));

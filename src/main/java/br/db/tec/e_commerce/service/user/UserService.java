@@ -22,6 +22,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     private TokenService tokenService; 
 
     @Transactional

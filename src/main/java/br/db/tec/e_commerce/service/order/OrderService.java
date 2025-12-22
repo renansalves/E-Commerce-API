@@ -4,6 +4,7 @@ import br.db.tec.e_commerce.domain.cart.CartItems;
 import br.db.tec.e_commerce.domain.cart.Carts;
 import br.db.tec.e_commerce.domain.order.*;
 import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.domain.user.Users;
 import br.db.tec.e_commerce.dto.order.OrderResponseDTO;
 import br.db.tec.e_commerce.mapper.order.OrderMapper;
 import br.db.tec.e_commerce.repository.CartItemsRepository;
@@ -14,6 +15,7 @@ import br.db.tec.e_commerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +35,12 @@ public class OrderService {
   @Autowired private OrderMapper orderMapper;
 
   @Transactional
-  public OrderResponseDTO checkout(Long userId) {
+  public OrderResponseDTO checkout() {
 
-    Carts cart = cartsRepository.findByUser_Id(userId)
-        .orElseThrow(() -> new RuntimeException("Carrinho não encontrado."));
-
+    Users currentUser = getAuthenticatedUser();
+    
+    Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
+        .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
     List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
 
     if (cartItems.isEmpty()) {
@@ -82,5 +85,10 @@ public class OrderService {
     cartItemsRepository.deleteAll(cartItems);
 
     return orderMapper.toResponseDTO(savedOrder, orderItems);
+  }
+
+  private Users getAuthenticatedUser() {
+    var authentication = SecurityContextHolder.getContext().getAuthentication();
+    return (Users) authentication.getPrincipal();
   }
 }

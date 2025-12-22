@@ -1,21 +1,20 @@
 package br.db.tec.e_commerce.UserServiceTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.db.tec.e_commerce.domain.user.UserRole;
 import br.db.tec.e_commerce.domain.user.Users;
@@ -28,24 +27,21 @@ import jakarta.persistence.EntityExistsException;
 class UserServiceTest {
 
     @Mock private UserRepository userRepository;
+    @Mock private PasswordEncoder passwordEncoder;
     @InjectMocks private UserService userService;
 
     @Test
     @DisplayName("Deve registrar um usuário com sucesso e encriptar a senha")
-    void registerUserSuccess() {
-        UserRegisterRequestDTO dto = new UserRegisterRequestDTO("teste@db.com", "senha123", UserRole.CLIENTE);
+    void shouldRegisterUserWithEncryptedPassword() {
+        UserRegisterRequestDTO dto = new UserRegisterRequestDTO("test@email.com", "senha123", UserRole.CLIENTE);
+        
+        when(passwordEncoder.encode(anyString())).thenReturn("senha_criptografada");
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
-        // Act
         userService.register(dto);
 
-        // Assert
-        ArgumentCaptor<Users> userCaptor = ArgumentCaptor.forClass(Users.class);
-        verify(userRepository).save(userCaptor.capture());
-        
-        Users savedUser = userCaptor.getValue();
-        assertNotEquals("senha123", savedUser.getPassword()); // Senha deve estar hashada
-        assertTrue(savedUser.getPassword().length() > 20); 
+        verify(passwordEncoder, times(1)).encode("senha123");
+        verify(userRepository, times(1)).save(any(Users.class));
     }
 
     @Test

@@ -1,9 +1,11 @@
 package br.db.tec.e_commerce.service.user;
 
+
 import br.db.tec.e_commerce.domain.user.Users;
 import br.db.tec.e_commerce.dto.auth.LoginRequestDTO;
 import br.db.tec.e_commerce.dto.user.UserRegisterRequestDTO;
 import br.db.tec.e_commerce.repository.UserRepository;
+import br.db.tec.e_commerce.security.TokenService;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Requer Spring Security

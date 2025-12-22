@@ -41,6 +41,6 @@ class CartServiceTest {
         when(cartsRepository.findByUser_Id(userId)).thenReturn(Optional.of(new Carts()));
         when(productRepository.findById(99L)).thenReturn(Optional.of(inactiveProduct));
 
-        assertThrows(EntityNotFoundException.class, () -> cartService.addItemToCart(userId, dto));
+        assertThrows(EntityNotFoundException.class, () -> cartService.addItemToCart(dto));
     }
 }

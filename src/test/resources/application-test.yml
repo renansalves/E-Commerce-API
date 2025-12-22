@@ -6,6 +6,10 @@ spring:
   password:
   driver-class-name: org.h2.Driver
 
+  api:
+    security:
+      token:
+        secret: "T0yMg&xfsGDd5JW4%v"
   jpa:
     hibernate.ddl-auto: none       
     show-sql: true

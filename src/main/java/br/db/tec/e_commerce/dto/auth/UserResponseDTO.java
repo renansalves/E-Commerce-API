@@ -1,4 +1,4 @@
-package br.db.tec.e_commerce.domain.auth;
+package br.db.tec.e_commerce.dto.auth;
 
 import br.db.tec.e_commerce.domain.user.UserRole;
 

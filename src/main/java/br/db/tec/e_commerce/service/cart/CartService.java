@@ -43,7 +43,7 @@ public class CartService {
     Carts cart = cartsRepository.findByUser_Id(userId)
         .orElseGet(() -> {
           Carts newCart = new Carts();
-          newCart.setUserId(currentUser);
+          newCart.setUser(currentUser);
           newCart.setCreatedAt(OffsetDateTime.now());
           return cartsRepository.save(newCart);
         });
@@ -82,7 +82,30 @@ public class CartService {
 
     List<CartItems> items = cartItemsRepository.findByCarts(cart);
 
-    // O MapStruct gera a implementação que chama os métodos de cálculo automáticos
     return cartMapper.toResponseDTO(cart, items);
+  }
+
+  public CartResponseDTO getCurrentCart() {
+    Users user = getAuthenticatedUser();
+    Carts cart = cartsRepository.findByUser_Id(user.getId())
+        .orElseThrow(() -> new EntityNotFoundException("Carrinho vazio ou não encontrado"));
+    List <CartItems> items = cartItemsRepository.findByCarts(cart);
+    return cartMapper.toResponseDTO(cart,items); // Usa o teu mapper para converter
+  }
+
+  @Transactional
+  public void clearCart(){
+    Users user = getAuthenticatedUser();
+
+    Carts cart = cartsRepository.findByUser_Id(user.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado"));
+    cartItemsRepository.deleteByCarts(cart);
+
+  }
+
+  @Transactional
+  public void removeItemFromCart(Long productId) {
+    Users user = getAuthenticatedUser();
+    cartItemsRepository.deleteByCarts_User_IdAndProduct_Id(user.getId(), productId);
   }
 }

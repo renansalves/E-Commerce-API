@@ -39,4 +39,5 @@ public interface CartMapper {
                 .mapToLong(this::calculateSubtotal)
                 .sum();
     }
+
 }

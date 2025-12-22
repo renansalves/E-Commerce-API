@@ -12,6 +12,7 @@ import br.db.tec.e_commerce.repository.CartsRepository;
 import br.db.tec.e_commerce.repository.OrderItemsRepository;
 import br.db.tec.e_commerce.repository.OrdersRepository;
 import br.db.tec.e_commerce.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class OrderService {
     
     Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
         .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
+    
     List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
 
     if (cartItems.isEmpty()) {

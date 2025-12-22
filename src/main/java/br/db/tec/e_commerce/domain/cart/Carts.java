@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
 
 @Entity
 @Table(
@@ -22,6 +23,7 @@ import lombok.Data;
   schema = "ecommerce"
 )
 @Data
+@Getter
 public class Carts {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

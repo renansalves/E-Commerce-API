@@ -11,13 +11,11 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
 
-    // Converte DTO de entrada para a Entidade (usado no POST)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Product toEntity(ProductRequestDTO dto);
 
-    // Converte Entidade para DTO de saída (usado nos GETs)
     ProductResponseDTO toResponseDTO(Product product);
 
     // Atualiza uma instância existente (usado no PUT)

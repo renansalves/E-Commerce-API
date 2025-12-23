@@ -24,18 +24,16 @@ public class SecurityFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
             throws ServletException, IOException {
         
         var token = this.recoverToken(request);
-        
         if (token != null) {
             var email = tokenService.validateToken(token);
             var user = userRepository.findByEmail(email).orElse(null);
-
+            System.out.println("User Authorities: " + user.getAuthorities());
             if (user != null) {
-                // Se o token é válido e o usuário existe, autenticamos ele no contexto do Spring
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, null);
+                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

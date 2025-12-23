@@ -52,15 +52,15 @@ public class Product {
  String currency = "BRL";
 
  @Column(nullable = false)
- private Integer stockQuantity = 0;
+ private Integer stockQuantity = 1;
  @NotNull
  @Column(nullable = false)
  private Boolean active = true;
 
  @Column(columnDefinition = "TIMESTAMPTZ")
- private OffsetDateTime createdAt;
+ private OffsetDateTime createdAt = OffsetDateTime.now();
 
  @Column(columnDefinition = "TIMESTAMPTZ")
- private OffsetDateTime updatedAt;
+ private OffsetDateTime updatedAt = OffsetDateTime.now();
 
 }

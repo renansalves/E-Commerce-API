@@ -1,6 +1,10 @@
 package br.db.tec.e_commerce.controller;
 
-import org.hibernate.query.Page;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,20 +17,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.db.tec.e_commerce.dto.product.ProductRequestDTO;
 import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
+import br.db.tec.e_commerce.mapper.product.ProductMapper;
+import br.db.tec.e_commerce.service.product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
 
+  @Autowired 
+  ProductService productService;
+  @Autowired
+  ProductMapper productMapper;
 
   @GetMapping("/products")
+  @PageableAsQueryParam
   @Operation(
   summary = "Lista todos os produtos",
   description = "Lista todos os produtos cadastrados, ativos e inativos."
   )
-  public ResponseEntity<Page> ListAllProducts() {
-  return null;
+  public ResponseEntity<Page<ProductResponseDTO>> ListAllProducts(@Parameter(hidden = true) Pageable pageable) {
+   Page<ProductResponseDTO> products = productService.listAll(pageable);
+   return ResponseEntity.ok(products);
   }
 
   @GetMapping("/products/{id}")
@@ -35,7 +49,8 @@ public class ProductController {
   description = "Lista um produto pelo seu id."
   )
   public ResponseEntity<ProductResponseDTO> getProducts(@PathVariable Long id){
-    return null;
+    ProductResponseDTO product = productService.search(id);
+    return ResponseEntity.status(HttpStatus.FOUND).body(product);
   }
 
 
@@ -44,8 +59,9 @@ public class ProductController {
   summary = "Criar Produto",
   description = "Adiciona um novo produto na tabela de produtos."
   )
-  public void createProduct(@RequestBody ProductRequestDTO dto){
-
+  public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO dto){
+   ProductResponseDTO savedProduct = productService.create(dto);
+   return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
   
   @PutMapping("/admin/products/{id}")
@@ -53,7 +69,10 @@ public class ProductController {
   summary = "Modifica um produto",
   description = "Modifica um produto existente, atravez de um id valido."
   )
-  public void updateProduct(@PathVariable Long id){
+  public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequestDTO dto){
+
+    ProductResponseDTO updatedProduct = productService.update(id, dto);
+    return ResponseEntity.ok(updatedProduct);
 
   }
 
@@ -62,7 +81,8 @@ public class ProductController {
   summary = "Remove um produto",
   description = "Remove um produto existente e com id valido."
   )
-  public void deleteProduct(@PathVariable Long id){
-
+  public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
+    productService.delete(id);
+    return ResponseEntity.noContent().build();
   }
 }

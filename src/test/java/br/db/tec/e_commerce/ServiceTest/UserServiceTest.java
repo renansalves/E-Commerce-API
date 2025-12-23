@@ -1,4 +1,4 @@
-package br.db.tec.e_commerce.UserServiceTest;
+package br.db.tec.e_commerce.ServiceTest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;

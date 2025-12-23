@@ -24,7 +24,6 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/items")
-
     @Operation(
     summary = "Adiciona produto",
     description = "Adiciona um produto ao carrinho do utilizador logado"

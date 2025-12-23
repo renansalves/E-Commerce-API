@@ -1,6 +1,9 @@
 package br.db.tec.e_commerce.ServiceTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -23,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import br.db.tec.e_commerce.domain.cart.Carts;
 import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.domain.user.UserRole;
 import br.db.tec.e_commerce.domain.user.Users;
 import br.db.tec.e_commerce.dto.cart.CartItemRequestDTO;
 import br.db.tec.e_commerce.repository.CartItemsRepository;
@@ -79,4 +83,25 @@ class CartServiceTest {
 
     assertThrows(EntityNotFoundException.class, () -> cartService.addItemToCart(dto));
   }
+
+  @Test
+  @DisplayName("Deve lançar exceção se o produto estiver inativo")
+  void ShouldCreateAnNewCartForCurrentUser() {
+    Users user = new Users();
+    user.setId(1L);
+    user.setEmail("Test@user.com");
+    user.setPassword("testUser123");
+    user.setRole(UserRole.CLIENTE);
+
+    Product product = new Product();
+    product.setSku("SKU-TEST123");
+    product.setName("ProductTest");
+    product.setPriceCents(30L);
+    CartItemRequestDTO dto = new CartItemRequestDTO(99L, 1);
+
+    when(cartsRepository.findByUser_Id(user.getId())).thenReturn(Optional.of(new Carts()));
+    assertNull(cartService.addItemToCart(dto));
+  }
+
+
 }

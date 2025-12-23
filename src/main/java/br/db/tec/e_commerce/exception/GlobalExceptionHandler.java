@@ -1,28 +1,44 @@
 package br.db.tec.e_commerce.exception;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import jakarta.persistence.EntityExistsException;
+import br.db.tec.e_commerce.dto.handler.*;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<String> handleConflict(EntityExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponseDTO(ex.getMessage(), "RESOURCE_NOT_FOUND", OffsetDateTime.now()));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ValidationErrorDTO>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        var errors = ex.getFieldErrors().stream()
+            .map(f -> new ValidationErrorDTO(f.getField(), f.getDefaultMessage()))
+            .toList();
+        return ResponseEntity.badRequest().body(errors);
     }
-    
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleBusinessError(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponseDTO(ex.getMessage(), "BAD_REQUEST", OffsetDateTime.now()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGeneralError(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponseDTO("Erro interno no servidor", "INTERNAL_SERVER_ERROR", OffsetDateTime.now()));
     }
 }
+

@@ -63,6 +63,13 @@ public class CartService {
     } else {
       item.setQuantity(item.getQuantity() + dto.quantity());
     }
+    if (!product.getActive()) {
+        throw new EntityNotFoundException("Produto inativo");
+    }
+
+    if (product.getStockQuantity() < dto.quantity()) {
+        throw new IllegalArgumentException("Estoque insuficiente");
+    }
 
     item.setUnitPrice(product.getPriceCents());
     cartItemsRepository.save(item);

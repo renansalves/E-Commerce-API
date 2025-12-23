@@ -34,12 +34,10 @@ class SecurityFilterTest {
     @Test
     @DisplayName("Deve continuar a corrente de filtros mesmo sem token no cabeçalho")
     void shouldContinueChainWhenNoAuthHeaderPresent() throws Exception {
-        // Simula o cabeçalho Authorization como nulo (Cobre o if (authHeader == null))
         when(request.getHeader("Authorization")).thenReturn(null);
 
         securityFilter.doFilterInternal(request, response, filterChain);
 
-        // Verifica se o filtro passou a requisição adiante sem tentar validar
         verify(filterChain, times(1)).doFilter(request, response);
         verifyNoInteractions(tokenService);
     }

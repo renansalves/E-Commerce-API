@@ -18,7 +18,6 @@ public interface ProductMapper {
 
     ProductResponseDTO toResponseDTO(Product product);
 
-    // Atualiza uma instância existente (usado no PUT)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

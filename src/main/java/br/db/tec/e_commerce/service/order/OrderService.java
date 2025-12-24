@@ -28,21 +28,27 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-  @Autowired private OrderItemsRepository orderItemsRepository;
-  @Autowired private CartItemsRepository cartItemsRepository;
-  @Autowired private ProductRepository productRepository;
-  @Autowired private OrdersRepository ordersRepository;
-  @Autowired private CartsRepository cartsRepository;
-  @Autowired private OrderMapper orderMapper;
+  @Autowired
+  private OrderItemsRepository orderItemsRepository;
+  @Autowired
+  private CartItemsRepository cartItemsRepository;
+  @Autowired
+  private ProductRepository productRepository;
+  @Autowired
+  private OrdersRepository ordersRepository;
+  @Autowired
+  private CartsRepository cartsRepository;
+  @Autowired
+  private OrderMapper orderMapper;
 
   @Transactional
   public OrderResponseDTO checkout() {
 
     Users currentUser = getAuthenticatedUser();
-    
+
     Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
         .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
-    
+
     List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
 
     if (cartItems.isEmpty()) {
@@ -54,7 +60,7 @@ public class OrderService {
         if (product.getStockQuantity() < item.getQuantity()) {
           throw new RuntimeException("Estoque insuficiente para o produto: " + item.getProduct().getName());
         }
-        product.setStockQuantity(product.getStockQuantity()-item.getQuantity());
+        product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
         productRepository.save(product);
       }
     }
@@ -92,5 +98,50 @@ public class OrderService {
   private Users getAuthenticatedUser() {
     var authentication = SecurityContextHolder.getContext().getAuthentication();
     return (Users) authentication.getPrincipal();
+  }
+
+  public OrderResponseDTO getOrderDetails(Long orderId) {
+    Users currentUser = getAuthenticatedUser();
+
+    Orders order = ordersRepository.findById(orderId)
+        .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado com o ID: " + orderId));
+
+    if (!order.getUser().getId().equals(currentUser.getId())) {
+      throw new RuntimeException("Acesso negado: Você não tem permissão para visualizar este pedido.");
+    }
+
+    List<OrderItems> items = orderItemsRepository.findByOrders(order);
+
+    return orderMapper.toResponseDTO(order, items);
+  }
+
+  public List<OrderResponseDTO> listMyOrders() {
+    Users currentUser = getAuthenticatedUser();
+    List<Orders> orders = ordersRepository.findByUser_IdOrderByCreatedAtDesc(currentUser.getId());
+
+    return orders.stream()
+        .map(order -> {
+          List<OrderItems> items = orderItemsRepository.findByOrders(order);
+          return orderMapper.toResponseDTO(order, items);
+        })
+        .toList();
+  }
+
+  @Transactional
+  public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus newStatus) {
+    Orders order = ordersRepository.findById(orderId)
+        .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado"));
+
+    // Regra simples: Não permite alterar status de pedidos CANCELLED
+    if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+      throw new RuntimeException("Não é possível alterar o status de um pedido cancelado.");
+    }
+
+    order.setOrderStatus(newStatus);
+    Orders updatedOrder = ordersRepository.save(order);
+
+    // Busca itens para o DTO
+    List<OrderItems> items = orderItemsRepository.findByOrders(updatedOrder);
+    return orderMapper.toResponseDTO(updatedOrder, items);
   }
 }

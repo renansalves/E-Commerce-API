@@ -30,6 +30,6 @@ public class Category {
   @Column(nullable = false)
   private String description;
   @Column(columnDefinition = "TIMESTAMPTZ")
-  private OffsetDateTime createdAt;
+  private OffsetDateTime createdAt=OffsetDateTime.now();
    
 }

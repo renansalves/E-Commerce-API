@@ -40,5 +40,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ErrorResponseDTO("Erro interno no servidor", "INTERNAL_SERVER_ERROR", OffsetDateTime.now()));
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        // Se a mensagem for "Acesso negado", retornamos 400 ou 403
+        if (ex.getMessage().contains("Acesso negado")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno");
+    }
 }
 

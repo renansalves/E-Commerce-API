@@ -14,12 +14,15 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "category", ignore = true) 
     Product toEntity(ProductRequestDTO dto);
 
+    @Mapping(target = "categoryId", source = "category.id") 
     ProductResponseDTO toResponseDTO(Product product);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "category", ignore = true) 
     void updateEntityFromDto(ProductRequestDTO dto, @MappingTarget Product product);
 }

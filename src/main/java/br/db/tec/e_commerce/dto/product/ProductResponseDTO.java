@@ -4,8 +4,8 @@ public record ProductResponseDTO(
     Long id,
     String sku,
     String name,
-    String description,
     Long priceCents,
+    Long categoryId, 
     Integer stockQuantity,
     String currency,
     Boolean active

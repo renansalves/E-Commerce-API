@@ -8,10 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import br.db.tec.e_commerce.domain.category.Category;
 import br.db.tec.e_commerce.domain.product.Product;
 import br.db.tec.e_commerce.dto.product.ProductRequestDTO;
 import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
 import br.db.tec.e_commerce.mapper.product.ProductMapper;
+import br.db.tec.e_commerce.repository.CategoryRepository;
 import br.db.tec.e_commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,10 +28,16 @@ public class ProductService {
   @Autowired
   private ProductMapper productMapper;
 
+  @Autowired 
+  private CategoryRepository categoryRepository;
+
   public ProductResponseDTO create(ProductRequestDTO dto) {
+    Category category = categoryRepository.findById(dto.categoryId()).
+      orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+
     Product product = productMapper.toEntity(dto);
-    product = productRepository.save(product);
-    return productMapper.toResponseDTO(product);
+    product.setCategory(category);
+    return productMapper.toResponseDTO(productRepository.save(product));
   }
 
   public ProductResponseDTO update(Long id, ProductRequestDTO dto) {

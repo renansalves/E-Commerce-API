@@ -37,17 +37,14 @@ class UserServiceIntegrationTest {
     @Test
     @DisplayName("Deve persistir usuário no banco com senha criptografada")
     void shouldPersistUserIntegration() {
-        // Arrange
         UserRegisterRequestDTO dto = new UserRegisterRequestDTO(
             "integracao@db.com", 
             "senhaForte123", 
             UserRole.CLIENTE
         );
 
-        // Act
         userService.register(dto);
 
-        // Assert
         Users savedUser = userRepository.findByEmail("integracao@db.com").orElseThrow();
         assertNotNull(savedUser.getId());
         assertNotEquals("senhaForte123", savedUser.getPassword());

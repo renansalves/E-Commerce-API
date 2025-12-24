@@ -7,6 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.OffsetDateTime;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +22,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.db.tec.e_commerce.Builder.ProductBuilder;
+import br.db.tec.e_commerce.domain.category.Category;
 import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.dto.category.CategoryRequestDTO;
 import br.db.tec.e_commerce.dto.product.ProductRequestDTO;
+import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
+import br.db.tec.e_commerce.repository.CategoryRepository;
 import br.db.tec.e_commerce.repository.ProductRepository;
 
 @SpringBootTest
@@ -36,18 +44,48 @@ class ProductController {
 
   @Autowired
   private ProductRepository productRepository;
+  @Autowired
+  private CategoryRepository categoryRepository;
 
+  private Product product;
+  private ProductBuilder productBuilder;
+  private ProductRequestDTO productRequestDTO;
+  private ProductResponseDTO productResponseDTO;
+  private Category category;
+
+  @BeforeEach
+  void setup(){
+
+    this.productBuilder = new ProductBuilder();
+    this.product = this.productBuilder.buildProduct();
+    this.productRequestDTO = this.productBuilder.buildProductRequestDTO();
+    this.productResponseDTO = this.productBuilder.buildProductResponseDTO();
+
+  }
   @Test
   @DisplayName("Admin deve conseguir criar um produto")
   @WithMockUser(roles = "ADMIN")
   void shouldCreateProductWhenUserIsAdmin() throws Exception {
-    var request = new ProductRequestDTO("SKU123", "Teclado Mecânico", "RGB", 15000L, "BRL", true, 10);
+// 1. Criar e salvar uma categoria real para o teste
+    Category category = new Category();
+    category.setName("Eletrónicos");
+    category.setDescription("Categoria de teste");
+    Category savedCategory = categoryRepository.save(category);
+
+    // 2. Construir o DTO passando o ID da categoria criada
+    ProductRequestDTO request = new ProductBuilder()
+        .withSku("SKU-NEW-123")
+        .withName("Novo Produto")
+        .withCategoryId(savedCategory.getId())
+        .withPriceCents(1000L)
+        .withStockQuantity(10)
+        .buildProductRequestDTO();
 
     mockMvc.perform(post("/api/admin/products")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.name").value("Teclado Mecânico"));
+        .andExpect(jsonPath("$.sku").value("SKU-NEW-123"));
   }
 
   @Test
@@ -81,8 +119,13 @@ class ProductController {
   @DisplayName("Deve retornar 400 ao tentar criar produto com preço ou estoque negativo")
   @WithMockUser(roles = "ADMIN")
   void shouldReturn400WhenPriceOrStockIsNegative() throws Exception {
-    ProductRequestDTO invalidRequest = new ProductRequestDTO(
-        "SKU-INV", "Produto Inválido", "Desc", -100L, "BRL", true, -5);
+    ProductRequestDTO invalidRequest = new ProductBuilder()
+      .withSku("SKU-INV")
+      .withName("Produto Inválido")
+      .withPriceCents(-100L)
+      .withActive(true)
+      .withStockQuantity(-5)
+      .buildProductRequestDTO();
 
     mockMvc.perform(post("/api/admin/products")
         .contentType(MediaType.APPLICATION_JSON)

@@ -22,7 +22,7 @@ import lombok.Data;
 @Entity
 @Table(
   name = "orders",
-  schema = "ecommerce"
+  schema = "ECOMMERCE"
 )
 @Data
 public class Orders {

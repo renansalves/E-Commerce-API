@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
   name = "category",
-  schema = "ecommerce"
+  schema = "ECOMMERCE"
 )
 @Data
 @NoArgsConstructor

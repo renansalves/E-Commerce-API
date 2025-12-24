@@ -24,7 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users", schema = "ecommerce")
+@Table(name = "users", schema = "ECOMMERCE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,7 +43,7 @@ public class Users implements UserDetails{
   private String password;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, columnDefinition = ("ecomerce.user_role_enum"))
+  @Column(nullable = false, columnDefinition = ("ECOMERCE.user_role_enum"))
   @JdbcType(PostgreSQLEnumJdbcType.class)
   private UserRole role;
 

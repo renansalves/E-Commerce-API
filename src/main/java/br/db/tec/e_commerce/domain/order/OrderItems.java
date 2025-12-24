@@ -21,7 +21,7 @@ import lombok.Data;
 @Entity
 @Table(
     name = "order_items",
-    schema = "ecommerce",
+    schema = "ECOMMERCE",
     indexes = {
         @Index(name = "idx_orders_items_orders_id", columnList = "orders_id"),
         @Index(name = "idx_orders_items_product_id", columnList = "product_id")

@@ -50,8 +50,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test' 
     testImplementation 'org.mockito:mockito-core:5.+'
     testImplementation 'com.h2database:h2'
+    testImplementation 'io.rest-assured:rest-assured' 
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql:10.20.1'
+
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -65,6 +67,9 @@ tasks.test {
     useJUnitPlatform()
     finalizedBy tasks.jacocoTestReport 
     systemProperty "spring.profiles.active", "test"
+    testLogging{
+    events "passed", "skipped", "failed"
+    }
 
 }
 
@@ -81,19 +86,9 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.25
+                minimum = 0.50
             }
         }
-        // Exemplo opcional de regra por classe/pacote (ajuste conforme necessidade)
-        // rule {
-        //     element = 'CLASS'
-        //     includes = ['br.db.tec.*']
-        //     limit {
-        //         counter = 'LINE'
-        //         value = 'COVEREDRATIO'
-        //         minimum = 0.80
-        //     }
-        // }
     }
 }
 

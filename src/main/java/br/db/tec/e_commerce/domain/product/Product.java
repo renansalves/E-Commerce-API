@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
   name = "product",
-  schema = "ecommerce",
+  schema = "ECOMMERCE",
   uniqueConstraints = {
     @UniqueConstraint(name = "uk_product_sku", columnNames = {"sku"})
   },

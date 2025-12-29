@@ -1,9 +1,9 @@
-package br.db.tec.e_commerce.e2e;
+package br.db.tec.e_commerce.E2E;
 
 import static io.restassured.RestAssured.given;
 
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import io.restassured.http.ContentType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public abstract class BaseE2ETest {
+public abstract class BaseE2ETest extends PostgresContainer{
 
   @LocalServerPort
   protected int port;
@@ -44,9 +44,7 @@ public abstract class BaseE2ETest {
     RestAssured.port = port;
     RestAssured.basePath = "/api";
 
-    productRepository.deleteAll();
-    categoryRepository.deleteAll();
-    userRepository.deleteAll();
+    
 
     setupTestData();
   }
@@ -55,19 +53,24 @@ public abstract class BaseE2ETest {
     createTestUser("admin@db.com", "123456789", UserRole.ADMIN);
     createTestUser("user@db.com",  "123456789", UserRole.CLIENTE);
 
-    Category cat = categoryRepository.save(new Category(null, "Eletrónicos","Eletronicos e informatica", OffsetDateTime.now()));
+    Category cat = new Category();
+    cat.setName("Eletrónicos");
+    cat.setCreatedAt(OffsetDateTime.now());
+    categoryRepository.save(cat);
+
     Product prod = new Product();
     prod.setName("Teclado");
-    prod.setSku("SKU-Teclado-123");
+    prod.setSku("SKU-Teclado-" + UUID.randomUUID().toString()); 
     prod.setPriceCents(10000L);
     prod.setStockQuantity(50);
     prod.setCategory(cat);
     prod.setActive(true);
+    prod.setCreatedAt(OffsetDateTime.now());
     productRepository.save(prod);
   }
 
   protected void createTestUser(String email, String password, UserRole role) {
-    Users user = new Users();
+   Users user = new Users();
     user.setEmail(email);
     user.setPassword(passwordEncoder.encode(password));
     user.setRole(role);

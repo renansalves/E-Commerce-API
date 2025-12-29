@@ -60,7 +60,7 @@ public class OrderServiceTest {
     mockUser = new Users();
     mockUser.setId(1L);
     mockUser.setEmail("admin@db.com");
-    mockUser.setRole(UserRole.ADMIN); // Se o estoque exigir cargo de Admin
+    mockUser.setRole(UserRole.ADMIN); 
 
     Authentication auth = new UsernamePasswordAuthenticationToken(mockUser, null, null);
 
@@ -79,7 +79,6 @@ public class OrderServiceTest {
   @Test
   @DisplayName("Deve finalizar checkout com sucesso e baixar stock")
   void checkoutSuccess() {
-    // Arrange
     Long userId = 1L;
     Users user = new Users();
     Carts cart = new Carts();
@@ -100,7 +99,7 @@ public class OrderServiceTest {
 
     orderService.checkout();
 
-    assertEquals(8, p.getStockQuantity()); // 10 - 2
+    assertEquals(8, p.getStockQuantity()); 
     verify(orderItemsRepository, times(1)).saveAll(anyList());
     verify(cartItemsRepository, times(1)).deleteAll(anyList());
   }

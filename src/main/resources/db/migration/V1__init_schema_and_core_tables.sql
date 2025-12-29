@@ -1,4 +1,4 @@
--- V1: criação inicial de schema e tabelas para e-commerce
+-- V2: criação inicial de schema e tabelas para e-commerce
 -- Banco: PostgreSQL
 -- Schema: ECOMERCE
 

@@ -1,6 +1,7 @@
 package br.db.tec.e_commerce.Builder;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import br.db.tec.e_commerce.domain.category.Category;
 import br.db.tec.e_commerce.domain.product.Product;
@@ -10,8 +11,9 @@ import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
 public class ProductBuilder {
 
   private Long id = null;
-  private String sku = "SKU123";
+  private String sku = "SKU-" + UUID.randomUUID().toString(); 
   private String name = "Teclado Mecânico";
+  private final String description = "Teclado Mecanico generico com switch red omron.";
   private Long priceCents = 15000L;
   private String currency = "BRL";
   private Boolean active = true;
@@ -77,6 +79,7 @@ public class ProductBuilder {
         this.id,
         this.sku,
         this.name,
+        this.description,
         this.priceCents,
         this.currency,
         this.category,

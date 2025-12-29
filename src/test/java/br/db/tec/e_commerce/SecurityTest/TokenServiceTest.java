@@ -17,7 +17,6 @@ class TokenServiceTest {
     @BeforeEach
     void setup() {
         tokenService = new TokenService();
-        // Injeta o valor da secret manualmente já que não estamos subindo o contexto do Spring
         ReflectionTestUtils.setField(tokenService, "secret", "test-secret-123");
     }
 
@@ -37,7 +36,6 @@ class TokenServiceTest {
     @Test
     @DisplayName("Deve retornar null ao validar um token inválido ou malformado")
     void shouldReturnNullForInvalidToken() {
-        // Cobre o bloco catch (JWTVerificationException)
         String invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.payload";
         
         String subject = tokenService.validateToken(invalidToken);

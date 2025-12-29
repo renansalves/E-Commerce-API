@@ -13,7 +13,6 @@ import static org.mockito.Mockito.lenient;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.h2.engine.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -115,12 +114,11 @@ class CartServiceTest {
   @Test
   @DisplayName("Deve lançar exceção se a quantidade solicitada for maior que o stock")
   void shouldThrowExceptionWhenInsufficientStock() {
-    // Este teste cobre um "branch" importante de regra de negócio
-    CartItemRequestDTO dto = new CartItemRequestDTO(10L, 100); // Pede 100
+    CartItemRequestDTO dto = new CartItemRequestDTO(10L, 100); 
     Product product = new Product();
     product.setId(10L);
     product.setActive(true);
-    product.setStockQuantity(10); // Só tem 10
+    product.setStockQuantity(10); 
 
     when(productRepository.findById(10L)).thenReturn(Optional.of(product));
 

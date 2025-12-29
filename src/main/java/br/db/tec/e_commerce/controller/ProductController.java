@@ -49,7 +49,7 @@ public class ProductController {
   description = "Lista um produto pelo seu id."
   )
   public ResponseEntity<ProductResponseDTO> getProducts(@PathVariable Long id){
-    ProductResponseDTO product = productService.search(id);
+    ProductResponseDTO product = productService.findByIdAndActive(id);
     return ResponseEntity.status(HttpStatus.FOUND).body(product);
   }
 
@@ -82,7 +82,7 @@ public class ProductController {
   description = "Remove um produto existente e com id valido."
   )
   public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
-    productService.delete(id);
+    productService.deactivateProduct(id);
     return ResponseEntity.noContent().build();
   }
 }

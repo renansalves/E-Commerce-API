@@ -4,5 +4,5 @@ public record OrderItemResponseDTO(
     Long productId,
     String productName,
     Integer quantity,
-    Long unitPriceSnapshot // Preço fixado no momento do checkout
+    Long unitPriceSnapshot
 ) {}

@@ -51,6 +51,9 @@ public class Product {
  @Column(nullable = false)
  String name;
 
+ @Column(nullable = false)
+ private String description;
+
  @NotNull
  @Min(0)
  @Column(nullable = false )

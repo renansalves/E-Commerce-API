@@ -20,7 +20,7 @@ public interface CartMapper {
     @Mapping(target = "itemId", source = "id")
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "unitPrice", source = "unitPrice") // unit_price_snapshot do banco
+    @Mapping(target = "unitPrice", source = "unitPrice") 
     @Mapping(target = "subtotal", expression = "java(calculateSubtotal(item))")
     CartItemResponseDTO toItemResponseDTO(CartItems item);
 
@@ -31,7 +31,7 @@ public interface CartMapper {
         return item.getQuantity() * price;
     }
 
-    // Lógica para o Total do Carrinho: Soma dos subtotais
+   
     @Named("calculateTotal")
     default Long calculateTotal(List<CartItems> items) {
         if (items == null) return 0L;

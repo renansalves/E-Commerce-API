@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS ECOMMERCE.cart_items (
   cart_id         BIGINT      NOT NULL REFERENCES ECOMMERCE.carts(id) ON DELETE CASCADE,
   product_id      BIGINT      NOT NULL REFERENCES ECOMMERCE.product(id) ON DELETE RESTRICT,
   quantity        INTEGER     NOT NULL CHECK (quantity > 0),
-  unit_price      BIGINT      NOT NULL CHECK (unit_price >= 0), -- Sincronizado com sua entidade
+  unit_price      BIGINT      NOT NULL CHECK (unit_price >= 0),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (cart_id, product_id)
 );

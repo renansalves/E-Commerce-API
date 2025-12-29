@@ -61,7 +61,6 @@ public class OrderBuilder {
         order.setOrderStatus(this.status);
         order.setTotalCents(this.totalCents);
         order.setCreatedAt(this.createdAt);
-        // Vincula os itens à ordem
         this.items.forEach(item -> item.setOrders(order));
         return order;
     }

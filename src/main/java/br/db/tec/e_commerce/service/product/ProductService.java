@@ -1,7 +1,6 @@
 package br.db.tec.e_commerce.service.product;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,11 +14,13 @@ import br.db.tec.e_commerce.dto.product.ProductResponseDTO;
 import br.db.tec.e_commerce.mapper.product.ProductMapper;
 import br.db.tec.e_commerce.repository.CategoryRepository;
 import br.db.tec.e_commerce.repository.ProductRepository;
+import br.db.tec.e_commerce.exception.InsufficientStockException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
   @Autowired
@@ -57,7 +58,7 @@ public class ProductService {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
     if (product.getStockQuantity() < quantity) {
-      throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
+      throw new InsufficientStockException("Estoque insuficiente para o produto: " + product.getName());
     }
     product.setStockQuantity(product.getStockQuantity() - quantity);
     product.setUpdatedAt(OffsetDateTime.now());
@@ -65,7 +66,7 @@ public class ProductService {
   }
 
   @Transactional
-  public void delete(Long id) {
+  public void deactivateProduct(Long id) {
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
     product.setActive(false);
@@ -73,7 +74,7 @@ public class ProductService {
     productRepository.save(product);
   }
 
-  public ProductResponseDTO search(Long id) {
+  public ProductResponseDTO findByIdAndActive(Long id) {
     Product product = productRepository.findByIdAndActive(id, true)
         .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
     return productMapper.toResponseDTO(product);

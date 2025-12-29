@@ -7,10 +7,12 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -22,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ProductRepositoryTest {
 
     @Autowired
@@ -33,7 +37,7 @@ class ProductRepositoryTest {
         Product product = new Product();
         product.setSku("SKU-123");
         product.setName("Notebook Gamer");
-        product.setPriceCents(500000L); // 5000.00
+        product.setPriceCents(500000L); 
         product.setCurrency("BRL");
         product.setActive(true);
         product.setCreatedAt(OffsetDateTime.now());
@@ -57,13 +61,12 @@ class ProductRepositoryTest {
         productRepository.save(p1);
 
         Product p2 = new Product();
-        p2.setSku("UNIQUE-SKU"); // Mesmo SKU
+        p2.setSku("UNIQUE-SKU"); 
         p2.setName("Prod 2");
         p2.setPriceCents(200L);
         p2.setActive(true);
         p2.setCreatedAt(OffsetDateTime.now());
 
-        // O flush é necessário para forçar a escrita no banco e disparar a constraint
         assertThrows(DataIntegrityViolationException.class, () -> {
             productRepository.saveAndFlush(p2);
         });

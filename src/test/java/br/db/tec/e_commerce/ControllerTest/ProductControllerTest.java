@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.OffsetDateTime;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.db.tec.e_commerce.Builder.ProductBuilder;
+import br.db.tec.e_commerce.TestInfra.DbCleaner;
 import br.db.tec.e_commerce.domain.category.Category;
 import br.db.tec.e_commerce.domain.product.Product;
 import br.db.tec.e_commerce.dto.category.CategoryRequestDTO;
@@ -53,30 +55,40 @@ class ProductController {
   private ProductResponseDTO productResponseDTO;
   private Category category;
 
-  @BeforeEach
-  void setup(){
+  @Autowired
+  private DbCleaner dbCleaner;
 
-    this.productBuilder = new ProductBuilder();
+  @BeforeEach
+  void cleanDatabase() {
+    dbCleaner.truncateAll();
+  }
+
+  @BeforeEach
+  void setup() {
+    category = new Category();
+    category.setName("Default Category");
+    category.setCreatedAt(OffsetDateTime.now());
+    category = categoryRepository.save(category);
+
+    this.productBuilder = ProductBuilder.anProduct()
+        .withCategoryId(category.getId())
+        .withCategory(category);
+
     this.product = this.productBuilder.buildProduct();
+    this.product = productRepository.save(this.product);
     this.productRequestDTO = this.productBuilder.buildProductRequestDTO();
     this.productResponseDTO = this.productBuilder.buildProductResponseDTO();
-
   }
+
   @Test
   @DisplayName("Admin deve conseguir criar um produto")
   @WithMockUser(roles = "ADMIN")
   void shouldCreateProductWhenUserIsAdmin() throws Exception {
-// 1. Criar e salvar uma categoria real para o teste
-    Category category = new Category();
-    category.setName("Eletrónicos");
-    category.setDescription("Categoria de teste");
-    Category savedCategory = categoryRepository.save(category);
 
-    // 2. Construir o DTO passando o ID da categoria criada
     ProductRequestDTO request = new ProductBuilder()
         .withSku("SKU-NEW-123")
         .withName("Novo Produto")
-        .withCategoryId(savedCategory.getId())
+        .withCategoryId(category.getId())
         .withPriceCents(1000L)
         .withStockQuantity(10)
         .buildProductRequestDTO();
@@ -100,7 +112,6 @@ class ProductController {
   @DisplayName("Delete deve apenas desativar o produto (Soft Delete)")
   @WithMockUser(roles = "ADMIN")
   void shouldDeactivateProductInsteadOfDeleting() throws Exception {
-    // Arrange: Criar produto no banco diretamente
     Product product = new Product();
     product.setName("Mouse");
     product.setSku("00000000000000001");
@@ -120,12 +131,12 @@ class ProductController {
   @WithMockUser(roles = "ADMIN")
   void shouldReturn400WhenPriceOrStockIsNegative() throws Exception {
     ProductRequestDTO invalidRequest = new ProductBuilder()
-      .withSku("SKU-INV")
-      .withName("Produto Inválido")
-      .withPriceCents(-100L)
-      .withActive(true)
-      .withStockQuantity(-5)
-      .buildProductRequestDTO();
+        .withSku("SKU-INV")
+        .withName("Produto Inválido")
+        .withPriceCents(-100L)
+        .withActive(true)
+        .withStockQuantity(-5)
+        .buildProductRequestDTO();
 
     mockMvc.perform(post("/api/admin/products")
         .contentType(MediaType.APPLICATION_JSON)

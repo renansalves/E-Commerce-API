@@ -14,7 +14,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
@@ -23,7 +22,7 @@ import lombok.Data;
     name = "order_items",
     schema = "ECOMMERCE",
     indexes = {
-        @Index(name = "idx_orders_items_orders_id", columnList = "orders_id"),
+        @Index(name = "idx_orders_items_orders_id", columnList = "order_id"),
         @Index(name = "idx_orders_items_product_id", columnList = "product_id")
     }
 )
@@ -36,9 +35,9 @@ public class OrderItems {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-        name ="orders_id",
+        name ="order_id",
         nullable = false,
-        foreignKey = @ForeignKey(name = "fk_orders_id")
+        foreignKey = @ForeignKey(name = "fk_order_id")
     )
     private Orders orders;
 
@@ -50,16 +49,16 @@ public class OrderItems {
     )
     private Product product;
 
-    @Min(1)
+    @Min(0)
     @Column(nullable = false)
     private int quantity;
 
-    @DecimalMin("0.0")
+    @Min(0)
     @Column(nullable = false)
     private Long unitPrice;
 
     @Column(columnDefinition = "TIMESTAMPTZ")
-    private OffsetDateTime createdAt;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 }
 
 

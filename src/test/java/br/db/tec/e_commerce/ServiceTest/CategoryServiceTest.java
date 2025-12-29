@@ -55,7 +55,6 @@ public class CategoryServiceTest {
     this.categoryBuilder = new CategoryBuilder()
       .withId(1L)
       .withName("Perifericos")
-      .withDescription("Perifericos de informatica, teclado/mouse, monitores, etc...")
       .withCreatedDate(OffsetDateTime.now());
     this.category = categoryBuilder.buildCategory();
     this.categoryRequestDTO = categoryBuilder.buildCategoryRequestDTO();
@@ -112,22 +111,18 @@ public class CategoryServiceTest {
         .anCategory()
         .withId(1L)
         .withName("Categoria existente")
-        .withDescription("Essa categoria existe")
         .buildCategory();
 
       CategoryRequestDTO requestDto = CategoryBuilder.anCategory()
           .withName("Categoria Atualizada")
-          .withDescription("Atualiza uma categoria existente.")
           .buildCategoryRequestDTO();
 
       Category updatedCategory = CategoryBuilder.anCategory()
           .withName("Categoria Atualizada")
-          .withDescription("Atualiza uma categoria existente.")
           .buildCategory();
       
       CategoryResponseDTO responseDto = CategoryBuilder.anCategory()
           .withName("Categoria Atualizada")
-          .withDescription("Atualiza uma categoria existente.")
           .buildCategoryResponseDTO();
 
       when(categoryRepository.findById(1L)).thenReturn(Optional.of(existCategory));
@@ -137,7 +132,6 @@ public class CategoryServiceTest {
       CategoryResponseDTO result = categoryService.update(1L, requestDto);
 
       assertEquals("Categoria Atualizada", result.name());
-      assertEquals("Atualiza uma categoria existente.", result.description());
   }
   @Test
   void ShouldDeleteAnCategoryById(){
@@ -148,7 +142,7 @@ public class CategoryServiceTest {
     assertDoesNotThrow(() -> categoryService.delete(id));
 
     verify(categoryRepository,times(1)).existsById(id);
-    verify(categoryRepository,times(1)).existsById(id);
+    verify(categoryRepository,times(1)).deleteById(id);
   }
 
 

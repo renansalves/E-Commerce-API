@@ -97,7 +97,7 @@ public class CartService {
     Carts cart = cartsRepository.findByUser_Id(user.getId())
         .orElseThrow(() -> new EntityNotFoundException("Carrinho vazio ou não encontrado"));
     List <CartItems> items = cartItemsRepository.findByCarts(cart);
-    return cartMapper.toResponseDTO(cart,items); // Usa o teu mapper para converter
+    return cartMapper.toResponseDTO(cart,items); 
   }
 
   @Transactional

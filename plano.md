@@ -58,7 +58,7 @@ DOD -> [Build ok, Cobertura Ok, Teste passando, funcionalidade Ok]
 ---
 
 ### 2.2 — Product — 6h
-**Implementação**: `Product(id, name, sku unique, price>0, stock≥0, active, category_id)`
+**Implementação**: `Product(id, name, description, sku unique, price>0, stock≥0, active, category_id)`
 
 **Teste (Integração Repository)**
 - Validações de preço/estoque, índice `sku`, relação com Category.

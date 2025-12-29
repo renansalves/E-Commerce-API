@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16
+    profiles: [dev]
     container_name: postgres
     restart: always
     environment:
@@ -19,6 +20,7 @@ services:
 
   app:
     build: .
+    profiles: [dev]
     container_name: app
     depends_on:
       postgres:
@@ -37,6 +39,24 @@ services:
       - "${PORT}:8080"
     networks:
       - postgres-network
+
+  test-runner:
+    build: .
+    profiles: [test]
+    image: postgres:16
+    container_name: postgres-test
+    restart: always
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U test -d testdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   postgres-network:

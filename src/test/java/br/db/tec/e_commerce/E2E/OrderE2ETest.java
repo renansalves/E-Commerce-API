@@ -8,7 +8,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.db.tec.e_commerce.e2e.BaseE2ETest;
+import br.db.tec.e_commerce.E2E.BaseE2ETest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
@@ -47,9 +47,8 @@ class OrderE2ETest extends BaseE2ETest{
         .post("/cart/items")
         .then()
         .log().all()
-        .statusCode(200);
+        .statusCode(201);
 
-    // 3. Checkout
     given()
         .header("Authorization", "Bearer " + token)
         .when()

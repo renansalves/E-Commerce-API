@@ -1,4 +1,5 @@
 package br.db.tec.e_commerce.ControllerTest;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,33 +10,47 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.db.tec.e_commerce.Builder.OrderBuilder;
+import br.db.tec.e_commerce.TestInfra.DbCleaner;
 import br.db.tec.e_commerce.domain.order.OrderStatus;
 import br.db.tec.e_commerce.dto.order.OrderResponseDTO;
+import br.db.tec.e_commerce.exception.GlobalExceptionHandler;
 import br.db.tec.e_commerce.service.order.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class OrderControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockitoBean // Substitui o Service real por um Mock no contexto do Spring
+  @MockitoBean
   private OrderService orderService;
+
+  @Autowired
+  private DbCleaner dbCleaner;
+
+  @BeforeEach
+  void cleanDatabase() {
+    dbCleaner.truncateAll();
+  }
 
   @Test
   @DisplayName("Deve retornar 201 ao realizar checkout com sucesso")
@@ -56,7 +71,6 @@ public class OrderControllerTest {
   @DisplayName("Deve retornar 404 se o carrinho estiver vazio no checkout")
   @WithMockUser(username = "user@db.com")
   void shouldReturnErrorWhenCartIsEmpty() throws Exception {
-    // Simulamos que o service lança uma exceção quando o carrinho está vazio
     when(orderService.checkout()).thenThrow(new EntityNotFoundException("Carrinho vazio"));
 
     mockMvc.perform(post("/api/orders/checkout")
@@ -86,26 +100,24 @@ public class OrderControllerTest {
     Long orderId = 99L;
 
     when(orderService.getOrderDetails(orderId))
-        .thenThrow(new RuntimeException("Acesso negado"));
+        .thenThrow(new AccessDeniedException("Acesso negado."));
 
     mockMvc.perform(get("/api/orders/" + orderId)
         .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest()); // Ou .isForbidden() dependendo do seu GlobalExceptionHandler
+        .andExpect(status().isForbidden());
   }
 
   @Test
   @DisplayName("Admin deve conseguir alterar status do pedido")
   @WithMockUser(username = "admin@db.com", roles = "ADMIN")
   void adminShouldUpdateStatus() throws Exception {
-    // Crie um DTO de resposta válido para evitar NullPointerException no Jackson
     OrderResponseDTO response = OrderBuilder.anOrder().buildResponseDTO();
 
-    // Use eq() para garantir que o Mockito identifique os tipos corretamente
-    when(orderService.updateOrderStatus(eq(1L), any(OrderStatus.class)))
+    when(orderService.updateOrderStatus(eq(1L), eq(OrderStatus.PAID)))
         .thenReturn(response);
 
     mockMvc.perform(patch("/api/orders/admin/1/status")
-        .param("status", "PAID") // Envia como query param: ?status=PAID
+        .param("status", "PAID")
         .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())

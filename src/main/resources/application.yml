@@ -4,9 +4,12 @@ spring:
     name: e-commerce
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
-    username: devuser
-    password: devpass
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: true
@@ -15,7 +18,7 @@ spring:
     baseline-description: Initial version
 
     connect-retries: 2 
-    schemas: TEST_SCHEMA
+    schemas: ECOMMERCE
     table: flyway_schema_history
 
 logging:

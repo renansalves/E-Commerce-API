@@ -25,7 +25,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers("/api/users/login").permitAll()
             .requestMatchers("/api/products/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN") 
-            .anyRequest().authenticated() // Altere de permitAll para authenticated para proteger a API
+            .anyRequest().authenticated() 
         )
         .addFilterBefore(securityFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
     

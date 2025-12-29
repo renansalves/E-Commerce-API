@@ -12,6 +12,7 @@ import br.db.tec.e_commerce.repository.CartsRepository;
 import br.db.tec.e_commerce.repository.OrderItemsRepository;
 import br.db.tec.e_commerce.repository.OrdersRepository;
 import br.db.tec.e_commerce.repository.ProductRepository;
+import br.db.tec.e_commerce.exception.CheckoutException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
   @Autowired
@@ -43,56 +45,58 @@ public class OrderService {
 
   @Transactional
   public OrderResponseDTO checkout() {
+    try {
+      Users currentUser = getAuthenticatedUser();
 
-    Users currentUser = getAuthenticatedUser();
+      Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
+          .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
 
-    Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
-        .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
+      List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
 
-    List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
+      if (cartItems.isEmpty()) {
+        throw new CheckoutException("Não é possível finalizar um pedido com o carrinho vazio");
+      } else {
 
-    if (cartItems.isEmpty()) {
-      throw new RuntimeException("Não é possível finalizar um pedido com o carrinho vazio");
-    } else {
-
-      for (CartItems item : cartItems) {
-        Product product = item.getProduct();
-        if (product.getStockQuantity() < item.getQuantity()) {
-          throw new RuntimeException("Estoque insuficiente para o produto: " + item.getProduct().getName());
+        for (CartItems item : cartItems) {
+          Product product = item.getProduct();
+          if (product.getStockQuantity() < item.getQuantity()) {
+            throw new CheckoutException("Estoque insuficiente para o produto: " + item.getProduct().getName());
+          }
+          product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
+          productRepository.save(product);
         }
-        product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
-        productRepository.save(product);
       }
+
+      Orders order = new Orders();
+      order.setUser(cart.getUser());
+      order.setOrderStatus(OrderStatus.PENDING);
+      order.setCreatedAt(OffsetDateTime.now());
+
+      long totalCents = cartItems.stream()
+          .mapToLong(item -> (long) (item.getQuantity() * item.getUnitPrice()))
+          .sum();
+      order.setTotalCents(totalCents);
+
+      final Orders savedOrder = ordersRepository.save(order);
+
+      List<OrderItems> orderItems = cartItems.stream().map(cartItem -> {
+        OrderItems orderItem = new OrderItems();
+        orderItem.setOrders(savedOrder);
+        orderItem.setProduct(cartItem.getProduct());
+        orderItem.setQuantity(cartItem.getQuantity());
+        orderItem.setUnitPrice(cartItem.getUnitPrice().longValue());
+        return orderItem;
+      }).collect(Collectors.toList());
+
+      orderItemsRepository.saveAll(orderItems);
+
+      cartItemsRepository.deleteAll(cartItems);
+
+      return orderMapper.toResponseDTO(savedOrder, orderItems);
+    } catch (Exception e) {
+      e.printStackTrace(); 
+      throw new CheckoutException("Erro interno no checkout", e);
     }
-
-    Orders order = new Orders();
-    order.setUser(cart.getUser());
-    order.setOrderStatus(OrderStatus.PENDING);
-    order.setCreatedAt(OffsetDateTime.now());
-
-    long totalCents = cartItems.stream()
-        .mapToLong(item -> (long) (item.getQuantity() * item.getUnitPrice()))
-        .sum();
-    order.setTotalCents(totalCents);
-
-    final Orders savedOrder = ordersRepository.save(order);
-
-    List<OrderItems> orderItems = cartItems.stream().map(cartItem -> {
-      OrderItems orderItem = new OrderItems();
-      orderItem.setOrders(savedOrder);
-      orderItem.setProduct(cartItem.getProduct());
-      orderItem.setQuantity(cartItem.getQuantity());
-      // Aqui aplicamos o snapshot: o preço do pedido nunca muda, mesmo que o produto
-      // mude
-      orderItem.setUnitPrice(cartItem.getUnitPrice().longValue());
-      return orderItem;
-    }).collect(Collectors.toList());
-
-    orderItemsRepository.saveAll(orderItems);
-
-    cartItemsRepository.deleteAll(cartItems);
-
-    return orderMapper.toResponseDTO(savedOrder, orderItems);
   }
 
   private Users getAuthenticatedUser() {
@@ -132,7 +136,6 @@ public class OrderService {
     Orders order = ordersRepository.findById(orderId)
         .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado"));
 
-    // Regra simples: Não permite alterar status de pedidos CANCELLED
     if (order.getOrderStatus() == OrderStatus.CANCELLED) {
       throw new RuntimeException("Não é possível alterar o status de um pedido cancelado.");
     }
@@ -140,7 +143,6 @@ public class OrderService {
     order.setOrderStatus(newStatus);
     Orders updatedOrder = ordersRepository.save(order);
 
-    // Busca itens para o DTO
     List<OrderItems> items = orderItemsRepository.findByOrders(updatedOrder);
     return orderMapper.toResponseDTO(updatedOrder, items);
   }

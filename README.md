@@ -1,7 +1,7 @@
 # 🛒Api E-Commerce🛒
 
 
-[![Build](https://License
+[![Build](https://License)
 
 > <Descrição breve: Api E-commerce, responsavel por gerenciar catalogo de produtos e controle de estoque. Para empressas de comercio digital/fisico.>  
 > Ex.: API REST para gerenciamento de catalogo de produtos,com authenticação de usuarios, papeis definidos `Cliente e administrador` com CRUD completo, validação e documentação via OpenAPI.
@@ -52,18 +52,10 @@
 - **Packaging:** Docker Compose
 
 ## 🚀 Execução
-
-### Build
-- `./gradlew clean build`
-
-### Run
-- `./gradlew bootRun`
-
-### Empacotamento 
-- `java -jar target/<artifact>-<version>.jar`
+- Para execução do projeto, api + banco de dados **Postgres**. Necessário possuir o docker + docker-compose para inicialização completa do ambiente.
 
 ### Docker-Compose
-- `docker compose up -d`
+- `docker compose up -d --build app postgres`
 --- 
 ## 📖 Documentação da API
 
@@ -73,15 +65,101 @@
 ## 🧪 Testes
 
 ### Gradle
+
+#### Preparação para os testes.
+- Para rodar os testes, devemos primeiro inicialiizar nosso container do **postgres** de testes. Com o seguinte commando:
+``` shell
+docke compose --profile test up -d
+```
+Em seguida podemos realizar os testes
+
 - `./gradlew test`
 - `./gradlew jacocoTestReport`
 ---
-## 🧹 Qualidade (Lint/Format)
-
-# Gradle
-- `./gradlew spotlessApply`
-- `./gradlew checkstyleMain`
 ---
+
+## 💻 Exemplos de Uso (cURL)
+
+Aqui estão os comandos para testar os fluxos principais via terminal. 
+*Nota: Substitua `<TOKEN>` pelo JWT retornado no login.*
+
+### Criar Usuario.
+```bash
+# Adiciona um admin
+curl -X POST http://localhost:8080/api/users/register \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "admin@db.com",
+       "password": "123456789",
+       "role": "ADMIN"
+     }'
+
+# Adiciona um CLIENTE
+curl -X POST http://localhost:8080/api/users/register \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "cliente@db.com",
+       "password": "123456789",
+       "role": "CLIENTE"
+     }'
+
+```
+### 1. Autenticação
+```bash
+# Login para obter o Token
+curl -X POST http://localhost:8080/api/users/login \
+     -H "Content-Type: application/json" \
+     -d '{"email": "cliente@db.com", "password": "123456789"}
+
+```
+### 2. Adicionar Produto ao carrinho
+```bash
+# 2. Adicionar produto ao carrinho
+curl -X POST http://localhost:8080/api/cart/items \
+     -H "Authorization: Bearer <TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{"productId": 1, "quantity": 2}'
+```
+### 2.1 Listar meu carrinho atual
+```bash
+# Listar meu carrinho atual
+curl -X GET http://localhost:8080/api/cart \
+     -H "Authorization: Bearer <TOKEN>"
+```
+
+### 3. Fazer Checkout
+```bash
+# Realizar Checkout (Cria o pedido a partir do carrinho)
+curl -X POST http://localhost:8080/api/orders/checkout \
+     -H "Authorization: Bearer <TOKEN>"
+```
+
+### Adicionar produtos e categorias (ADMIN)
+- Fazer login como admin.
+```bash
+# Login para obter o Token
+curl -X POST http://localhost:8080/api/users/login \
+     -H "Content-Type: application/json" \
+     -d '{"email": "admin@db.com", "password": "123456789"}'
+```
+- Chamar endpoint para criar a categoria.
+
+```bash
+curl -X POST http://localhost:8080/api/categories/admin \
+     -H "Authorization: Bearer <TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Categoria 1","description":"Categoria generica"}'
+```
+- Chamar endpoint para criar o produto.
+
+```bash
+curl -X POST http://localhost:8080/api/admin/products \
+     -H "Authorization: Bearer <TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{"name":, "Produto 1","priceCents": 40000, "stockQuantity":4,"categoryId":1}'
+```
+
+
 ## Contrato de API 
 ### Auth
 - `POST /api/auth/register` — register user (ADMIN controlled or public depending on env).  
@@ -110,7 +188,6 @@
 
 ### Orders
 - `POST /api/orders/checkout` — create order from cart (validates stock).  
-- `POST /api/orders/{orderId}/pay` — mock payment (idempotent).  
 - `GET /api/orders` — list current user's orders (paginated).  
 - `GET /api/admin/orders` — ADMIN list all orders (paginated).
 
@@ -120,7 +197,6 @@
   "status": 400,
   "code": "BAD_REQUEST",
   "message": "Quantity must be greater than zero",
-  "traceId": "req-12345"
 }
 ```
 
@@ -134,6 +210,10 @@ Allowed transitions:
 - `PAID` → `CANCELLED` (somente via reembolso para versoes futuras)  
 
 Transições invalidas devem retornar `409 Conflict`.
+
+## TODO
+
+- [] `POST /api/orders/{orderId}/pay`   
 ---
 🤝 Contribuição
 

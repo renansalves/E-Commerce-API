@@ -1,30 +1,31 @@
 package br.db.tec.e_commerce.service.order;
 
-import br.db.tec.e_commerce.domain.cart.CartItems;
-import br.db.tec.e_commerce.domain.cart.Carts;
-import br.db.tec.e_commerce.domain.order.*;
-import br.db.tec.e_commerce.domain.product.Product;
-import br.db.tec.e_commerce.domain.user.Users;
-import br.db.tec.e_commerce.dto.order.OrderResponseDTO;
-import br.db.tec.e_commerce.mapper.order.OrderMapper;
-import br.db.tec.e_commerce.repository.CartItemsRepository;
-import br.db.tec.e_commerce.repository.CartsRepository;
-import br.db.tec.e_commerce.repository.OrderItemsRepository;
-import br.db.tec.e_commerce.repository.OrdersRepository;
-import br.db.tec.e_commerce.repository.ProductRepository;
-import br.db.tec.e_commerce.exception.CheckoutException;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import br.db.tec.e_commerce.domain.cart.CartItems;
+import br.db.tec.e_commerce.domain.cart.Carts;
+import br.db.tec.e_commerce.domain.order.OrderItems;
+import br.db.tec.e_commerce.domain.order.OrderStatus;
+import br.db.tec.e_commerce.domain.order.Orders;
+import br.db.tec.e_commerce.domain.product.Product;
+import br.db.tec.e_commerce.domain.user.Users;
+import br.db.tec.e_commerce.dto.order.OrderResponseDTO;
+import br.db.tec.e_commerce.exception.CheckoutException;
+import br.db.tec.e_commerce.mapper.order.OrderMapper;
+import br.db.tec.e_commerce.repository.CartItemsRepository;
+import br.db.tec.e_commerce.repository.CartsRepository;
+import br.db.tec.e_commerce.repository.OrderItemsRepository;
+import br.db.tec.e_commerce.repository.OrdersRepository;
+import br.db.tec.e_commerce.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -93,8 +94,10 @@ public class OrderService {
       cartItemsRepository.deleteAll(cartItems);
 
       return orderMapper.toResponseDTO(savedOrder, orderItems);
+
+    } catch (CheckoutException | EntityNotFoundException e) {
+      throw e;
     } catch (Exception e) {
-      e.printStackTrace(); 
       throw new CheckoutException("Erro interno no checkout", e);
     }
   }

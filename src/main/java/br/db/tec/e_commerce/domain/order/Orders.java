@@ -54,8 +54,8 @@ public class Orders {
   private Long totalCents;
 
   @Column(columnDefinition = "TIMESTAMPTZ")
-  private OffsetDateTime createdAt;
+  private OffsetDateTime createdAt = OffsetDateTime.now();
 
   @Column(columnDefinition = "TIMESTAMPTZ")
-  private OffsetDateTime updatedAt;
+  private OffsetDateTime updatedAt = OffsetDateTime.now();
 }

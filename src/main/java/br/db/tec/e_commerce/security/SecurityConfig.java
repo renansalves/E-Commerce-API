@@ -13,26 +13,33 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-@Autowired
-    private SecurityFilter securityFilter;
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Autowired
+  private SecurityFilter securityFilter;
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/users/register").permitAll() 
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .requestMatchers("/swagger-resources/**").permitAll()
+            .requestMatchers("/webjars/**").permitAll().
+            requestMatchers("/v3/api-docs").permitAll()
+            .requestMatchers("/api/users/register").permitAll()
             .requestMatchers("/api/users/login").permitAll()
             .requestMatchers("/api/products/**").permitAll()
-            .requestMatchers("/api/admin/**").hasRole("ADMIN") 
-            .anyRequest().authenticated() 
-        )
-        .addFilterBefore(securityFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
-    
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            .anyRequest().authenticated())
+        .addFilterBefore(securityFilter,
+            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
-}
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

@@ -1,14 +1,17 @@
 package br.db.tec.e_commerce.SecurityTest;
 
-import br.db.tec.e_commerce.domain.user.UserRole;
-import br.db.tec.e_commerce.domain.user.Users;
-import br.db.tec.e_commerce.security.TokenService;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.jupiter.api.Assertions.*;
+import br.db.tec.e_commerce.domain.user.UserRole;
+import br.db.tec.e_commerce.domain.user.Users;
+import br.db.tec.e_commerce.security.TokenService;
 
 class TokenServiceTest {
 
@@ -31,6 +34,13 @@ class TokenServiceTest {
         String subject = tokenService.validateToken(token);
 
         assertEquals("test@dbserver.com", subject);
+    }
+
+    @Test
+    @DisplayName("Um erro deve ser lançado na tentativa de gerar o token com usuario nulo.")
+    void shoultThrowAnExceptionWhenTryToGenerateANewTokenWithNullUser() {
+        Users user = new Users();
+        assertThrows(RuntimeException.class, (() -> tokenService.generateToken(user)));
     }
 
     @Test

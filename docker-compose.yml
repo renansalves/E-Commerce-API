@@ -13,7 +13,7 @@ services:
     networks:
       - postgres-network
     healthcheck:
-      test: ["CMD-SHELL","pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,7 +33,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-        
 
     ports:
       - "${PORT}:8080"
@@ -47,13 +46,13 @@ services:
     container_name: postgres-test
     restart: always
     environment:
-      POSTGRES_DB: testdb
+      POSTGRES_DB: ecommerce
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL","pg_isready -U test -d testdb"]
+      test: ["CMD-SHELL", "pg_isready -U test -d ecommerce"]
       interval: 10s
       timeout: 5s
       retries: 5

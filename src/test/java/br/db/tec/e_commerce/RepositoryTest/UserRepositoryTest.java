@@ -36,6 +36,7 @@ class UserRepositoryTest {
   void shouldCreateUserClientAndReturn() {
     Users newUserClient = new Users(
         null,
+        "usuario test",
         "usuario@test.com",
         "asbasdasd-asdqwdq",
         UserRole.CLIENTE,
@@ -43,7 +44,7 @@ class UserRepositoryTest {
         OffsetDateTime.now());
 
     entityManager.persist(newUserClient);
-    entityManager.flush(); 
+    entityManager.flush();
 
     Long id = newUserClient.getId();
     assertTrue(id != null && id > 0);
@@ -58,6 +59,7 @@ class UserRepositoryTest {
   void shouldSaveAndFindUser() {
     Users user = new Users(
         null,
+        "cliente teste",
         "cliente@teste.com",
         "hashSeguro123",
         UserRole.CLIENTE,
@@ -68,8 +70,8 @@ class UserRepositoryTest {
 
     Optional<Users> foundUser = userRepository.findByEmail("cliente@teste.com");
 
-    assertEquals(foundUser.get().getEmail(),user.getEmail() );
-    assertEquals(foundUser.get().getRole(),UserRole.CLIENTE);
+    assertEquals(foundUser.get().getEmail(), user.getEmail());
+    assertEquals(foundUser.get().getRole(), UserRole.CLIENTE);
   }
 
   @Test
@@ -77,6 +79,7 @@ class UserRepositoryTest {
   void shouldThrowExceptionOnDuplicateEmail() {
     Users user1 = new Users(
         null,
+        "duplicado teste",
         "duplicado@teste.com",
         "pass1",
         UserRole.ADMIN,
@@ -86,6 +89,7 @@ class UserRepositoryTest {
 
     Users user2 = new Users(
         null,
+        "duplicado 2 teste",
         "duplicado@teste.com",
         "pass2",
         UserRole.CLIENTE,

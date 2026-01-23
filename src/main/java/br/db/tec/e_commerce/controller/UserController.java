@@ -5,6 +5,8 @@ import br.db.tec.e_commerce.dto.user.UserRegisterRequestDTO;
 import br.db.tec.e_commerce.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import java.util.Map;
@@ -19,32 +21,49 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Users", description = "Endpoint responsavel por gerenciar authenticação dos usuarios.")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @Operation(
-    summary = "Registra novo usuário.",
-    description = "Realiza o registro do usuario com as informações de nome e email."
-    )
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Valid UserRegisterRequestDTO dto) {
-        userService.register(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+  @Operation(summary = "Registra novo usuário.", description = "Realiza o registro do usuario com as informações de nome e email.")
+  @PostMapping("/register")
+  public ResponseEntity<Void> register(@RequestBody @Valid UserRegisterRequestDTO dto) {
+    userService.register(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<Object> getById(@PathVariable Long id) {
+    return ResponseEntity.ok(userService.findById(id));
+  }
 
-    @Operation(
-    summary = "Logar",
-    description = "Logar um usuario existente no banco, atravez da sua senha."
-    )
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequestDTO dto) {
-      String token = userService.authenticate(dto);
-      return ResponseEntity.ok(Map.of("token", token));
-    }
+  @Operation(summary = "Logar", description = "Logar um usuario existente no banco, atravez da sua senha.")
+  @PostMapping("/login")
+  public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequestDTO dto,
+      HttpServletResponse response) {
+    String token = userService.authenticate(dto);
+
+    Cookie cookie = new Cookie("jwt", token);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(true); // se estiver usando HTTPS
+    cookie.setPath("/");
+    cookie.setMaxAge(60 * 60 * 2); // 2h
+    cookie.setAttribute("SameSite", "Strict"); // ou None/Lax
+    response.addCookie(cookie);
+    return ResponseEntity.ok(Map.of("token", token));
+
+  }
+
+  @Operation(summary = "Deslogar", description = "Deslogar um usuário logado")
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(HttpServletResponse response) {
+    Cookie cookie = new Cookie("jwt", "");
+    cookie.setHttpOnly(true);
+    cookie.setSecure(true);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+
+    return ResponseEntity.ok().build();
+  }
 
 }

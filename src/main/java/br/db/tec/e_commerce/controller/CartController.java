@@ -20,38 +20,33 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequestMapping("/api/cart")
 public class CartController {
 
-    @Autowired
-    private CartService cartService;
+  @Autowired
+  private CartService cartService;
 
-    @PostMapping("/items")
-    @Operation(
-    summary = "Adiciona produto",
-    description = "Adiciona um produto ao carrinho do utilizador logado"
-    )
-    public ResponseEntity<CartResponseDTO> addItem(@RequestBody @Valid CartItemRequestDTO dto) {
-        CartResponseDTO response = cartService.addItemToCart(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping("/items")
+  @Operation(summary = "Adiciona produto", description = "Adiciona um produto ao carrinho do utilizador logado")
+  public ResponseEntity<CartResponseDTO> addItem(@RequestBody @Valid CartItemRequestDTO dto) {
+    CartResponseDTO response = cartService.addItemToCart(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @GetMapping
-    @Operation(
-    summary = "Buscar Carrinho usuario",
-    description = "Recupera o carrinho completo do utilizador logado"
-    )
-    public ResponseEntity<CartResponseDTO> getMyCart() {
-        CartResponseDTO response = cartService.getCurrentCart();
-        return ResponseEntity.ok(response);
-    }
+  @GetMapping
+  @Operation(summary = "Buscar Carrinho usuario", description = "Recupera o carrinho completo do utilizador logado")
+  public ResponseEntity<CartResponseDTO> getMyCart() {
+    CartResponseDTO response = cartService.getCurrentCart();
+    return ResponseEntity.ok(response);
+  }
 
-    @DeleteMapping("/items/{productId}")
-    public ResponseEntity<Void> removeItem(@PathVariable Long productId) {
-        cartService.removeItemFromCart(productId);
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping("/items/{productId}")
+  @Operation(summary = "Remove um item do carrinho", description = "Remove um item do carrinho, identificado pelo seu ID.")
+  public ResponseEntity<Void> removeItem(@PathVariable Long productId) {
+    cartService.removeItemFromCart(productId);
+    return ResponseEntity.noContent().build();
+  }
 
-    @DeleteMapping
-    public ResponseEntity<Void> clearCart() {
-        cartService.clearCart();
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping
+  public ResponseEntity<Void> clearCart() {
+    cartService.clearCart();
+    return ResponseEntity.noContent().build();
+  }
 }

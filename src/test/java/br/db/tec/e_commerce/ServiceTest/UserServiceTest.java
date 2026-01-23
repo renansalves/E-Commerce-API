@@ -26,31 +26,36 @@ import jakarta.persistence.EntityExistsException;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock private UserRepository userRepository;
-    @Mock private PasswordEncoder passwordEncoder;
-    @InjectMocks private UserService userService;
+  @Mock
+  private UserRepository userRepository;
+  @Mock
+  private PasswordEncoder passwordEncoder;
+  @InjectMocks
+  private UserService userService;
 
-    @Test
-    @DisplayName("Deve registrar um usuário com sucesso e encriptar a senha")
-    void shouldRegisterUserWithEncryptedPassword() {
-        UserRegisterRequestDTO dto = new UserRegisterRequestDTO("test@email.com", "senha123", UserRole.CLIENTE);
-        
-        when(passwordEncoder.encode(anyString())).thenReturn("senha_criptografada");
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+  @Test
+  @DisplayName("Deve registrar um usuário com sucesso e encriptar a senha")
+  void shouldRegisterUserWithEncryptedPassword() {
+    UserRegisterRequestDTO dto = new UserRegisterRequestDTO("teste name", "test@email.com", "senha123",
+        UserRole.CLIENTE);
 
-        userService.register(dto);
+    when(passwordEncoder.encode(anyString())).thenReturn("senha_criptografada");
+    when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
-        verify(passwordEncoder, times(1)).encode("senha123");
-        verify(userRepository, times(1)).save(any(Users.class));
-    }
+    userService.register(dto);
 
-    @Test
-    @DisplayName("Deve lançar exceção se o e-mail já existir")
-    void registerUserEmailExists() {
-        UserRegisterRequestDTO dto = new UserRegisterRequestDTO("existente@db.com", "12345678", UserRole.CLIENTE);
-        when(userRepository.existsByEmail("existente@db.com")).thenReturn(true);
+    verify(passwordEncoder, times(1)).encode("senha123");
+    verify(userRepository, times(1)).save(any(Users.class));
+  }
 
-        assertThrows(EntityExistsException.class, () -> userService.register(dto));
-        verify(userRepository, never()).save(any());
-    }
+  @Test
+  @DisplayName("Deve lançar exceção se o e-mail já existir")
+  void registerUserEmailExists() {
+    UserRegisterRequestDTO dto = new UserRegisterRequestDTO("exist name", "existente@db.com", "12345678",
+        UserRole.CLIENTE);
+    when(userRepository.existsByEmail("existente@db.com")).thenReturn(true);
+
+    assertThrows(EntityExistsException.class, () -> userService.register(dto));
+    verify(userRepository, never()).save(any());
+  }
 }

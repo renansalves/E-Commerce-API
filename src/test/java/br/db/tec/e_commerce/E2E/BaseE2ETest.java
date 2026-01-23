@@ -24,7 +24,7 @@ import io.restassured.http.ContentType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public abstract class BaseE2ETest extends PostgresContainer{
+public abstract class BaseE2ETest extends PostgresContainer {
 
   @LocalServerPort
   protected int port;
@@ -44,14 +44,12 @@ public abstract class BaseE2ETest extends PostgresContainer{
     RestAssured.port = port;
     RestAssured.basePath = "/api";
 
-    
-
     setupTestData();
   }
 
   protected void setupTestData() {
-    createTestUser("admin@db.com", "123456789", UserRole.ADMIN);
-    createTestUser("user@db.com",  "123456789", UserRole.CLIENTE);
+    createTestUser("Admin name", "admin@db.com", "123456789", UserRole.ADMIN);
+    createTestUser("User name", "user@db.com", "123456789", UserRole.CLIENTE);
 
     Category cat = new Category();
     cat.setName("Eletrónicos");
@@ -60,7 +58,7 @@ public abstract class BaseE2ETest extends PostgresContainer{
 
     Product prod = new Product();
     prod.setName("Teclado");
-    prod.setSku("SKU-Teclado-" + UUID.randomUUID().toString()); 
+    prod.setSku("SKU-Teclado-" + UUID.randomUUID().toString());
     prod.setPriceCents(10000L);
     prod.setStockQuantity(50);
     prod.setCategory(cat);
@@ -69,18 +67,19 @@ public abstract class BaseE2ETest extends PostgresContainer{
     productRepository.save(prod);
   }
 
-  protected void createTestUser(String email, String password, UserRole role) {
-   Users user = new Users();
+  protected void createTestUser(String name, String email, String password, UserRole role) {
+    Users user = new Users();
+    user.setName(name);
     user.setEmail(email);
     user.setPassword(passwordEncoder.encode(password));
     user.setRole(role);
     userRepository.save(user);
   }
 
-  protected String loginAndGetToken(String email, String password) {
+  protected String loginAndGetToken(String name, String email, String password) {
     return given()
         .contentType(ContentType.JSON)
-        .body(new LoginRequest(email, password))
+        .body(new LoginRequest(name, email, password))
         .log().all()
         .when()
         .post("/users/login")
@@ -91,6 +90,6 @@ public abstract class BaseE2ETest extends PostgresContainer{
         .path("token");
   }
 
-  private record LoginRequest(String email, String password) {
+  private record LoginRequest(String name, String email, String password) {
   }
 }

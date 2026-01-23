@@ -6,20 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import br.db.tec.e_commerce.E2E.BaseE2ETest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class OrderE2ETest extends BaseE2ETest{
+class OrderE2ETest extends BaseE2ETest {
 
   @LocalServerPort
   private int port;
@@ -36,7 +31,7 @@ class OrderE2ETest extends BaseE2ETest{
 
     Long productId = productRepository.findAll().get(0).getId();
 
-    String token = loginAndGetToken("user@db.com", "123456789");
+    String token = loginAndGetToken("user test", "user@db.com", "123456789");
 
     given()
         .header("Authorization", "Bearer " + token)

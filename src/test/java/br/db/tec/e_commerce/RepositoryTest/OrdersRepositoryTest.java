@@ -4,7 +4,7 @@ import br.db.tec.e_commerce.domain.order.OrderStatus;
 import br.db.tec.e_commerce.domain.order.Orders;
 import br.db.tec.e_commerce.domain.user.Users;
 import br.db.tec.e_commerce.repository.OrdersRepository;
-import br.db.tec.e_commerce.domain.user.UserRole; 
+import br.db.tec.e_commerce.domain.user.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,14 @@ class OrdersRepositoryTest {
   private OrdersRepository ordersRepository;
 
   @Autowired
-  private TestEntityManager entityManager; 
+  private TestEntityManager entityManager;
 
   @Test
-  @DisplayName("Should save order linked to a user")
+  @DisplayName("Deve salvar um pedido de um usuário.")
   void shouldSaveOrder() {
     Users user = new Users(
         null,
+        "teste name",
         "test@test.com",
         "hashed_pass",
         UserRole.CLIENTE,

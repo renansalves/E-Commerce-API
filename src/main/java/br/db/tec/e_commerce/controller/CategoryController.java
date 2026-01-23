@@ -26,55 +26,40 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+  @Autowired
+  private CategoryService categoryService;
 
   @GetMapping
   @PageableAsQueryParam
-  @Operation(
-  summary = "Lista todas categorias",
-  description = "Lista todos as categorias cadastrados"
-  )
-    public ResponseEntity<Page<CategoryResponseDTO>> getAll(@Parameter(hidden=true) Pageable pageable) {
-      Page<CategoryResponseDTO> category = categoryService.listAll(pageable);
-        return ResponseEntity.ok(category);
-    }
+  @Operation(summary = "Lista todas categorias", description = "Lista todos as categorias cadastrados")
+  public ResponseEntity<Page<CategoryResponseDTO>> getAll(@Parameter(hidden = true) Pageable pageable) {
+    Page<CategoryResponseDTO> category = categoryService.listAll(pageable);
+    return ResponseEntity.ok(category);
+  }
 
-  @Operation(
-  summary = "Lista todas categorias",
-  description = "Lista todos as categorias cadastrados"
-  )
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.findById(id));
-    }
+  @Operation(summary = "Buscar categoria por id", description = "Busca uma categoria pelo seu id.")
+  @GetMapping("/{id}")
+  public ResponseEntity<CategoryResponseDTO> getById(@PathVariable Long id) {
+    return ResponseEntity.ok(categoryService.findById(id));
+  }
 
-  @Operation(
-  summary = "Lista todas categorias",
-  description = "Lista todos as categorias cadastrados"
-  )
-    @PostMapping("/admin")
-    public ResponseEntity<CategoryResponseDTO> create(@RequestBody @Valid CategoryRequestDTO dto) {
-        CategoryResponseDTO response = categoryService.save(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @Operation(summary = "Adiciona categoria", description = "Adicionar uma nova categoria no sistema.")
+  @PostMapping("/admin")
+  public ResponseEntity<CategoryResponseDTO> create(@RequestBody @Valid CategoryRequestDTO dto) {
+    CategoryResponseDTO response = categoryService.save(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-  @Operation(
-  summary = "Lista todas categorias",
-  description = "Lista todos as categorias cadastrados"
-  )
-    @PutMapping("/admin/{id}")
-    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @RequestBody @Valid CategoryRequestDTO dto) {
-        return ResponseEntity.ok(categoryService.update(id, dto));
-    }
+  @Operation(summary = "Atualiza categoria", description = "Atualiza uma categoria existente.")
+  @PutMapping("/admin/{id}")
+  public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @RequestBody @Valid CategoryRequestDTO dto) {
+    return ResponseEntity.ok(categoryService.update(id, dto));
+  }
 
-  @Operation(
-  summary = "Lista todas categorias",
-  description = "Lista todos as categorias cadastrados"
-  )
-    @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        categoryService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+  @Operation(summary = "Remove uma categoria.", description = "Remove uma categoria existente atravez do seu id.")
+  @DeleteMapping("/admin/{id}")
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+    categoryService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }

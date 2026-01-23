@@ -31,6 +31,7 @@ public class UserService {
     }
 
     Users user = new Users();
+    user.setName(dto.name());
     user.setEmail(dto.email());
     user.setRole(dto.role());
 

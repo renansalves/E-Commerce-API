@@ -7,16 +7,16 @@
 > Ex.: API REST para gerenciamento de catalogo de produtos,com authenticação de usuarios, papeis definidos `Cliente e administrador` com CRUD completo, validação e documentação via OpenAPI.
 ---
 ## 📚 Sumário
-- Arquitetura
-- Stack de Tecnologias
-- Configuração
-- Execução
-- Documentação da API
-- Exemplos de uso curl/jq
-- CI/CD
-- Deploy Docker/k8s
-- Contribuição
-- Licença
+- [Arquitetura](#Arquitetura)
+- [Stack de Tecnologias](#Stack-de-tecnologia)
+- [Configuração](#Configuração)
+- [Execução](#Execução)
+- [Documentação da API]("Documentação-da-API")
+- [Exemplos de uso curl/jq](Exemplos-de-uso-curl/jq)
+- [CI/CD](#CI/CD)
+- [Deploy Docker/k8s](Deploy-Docker/k8s)
+- [Contribuição](Contribuição)
+- [Licença](Licença)
 ---
 
 ## 🏛️ Arquitetura
@@ -162,8 +162,9 @@ curl -X POST http://localhost:8080/api/admin/products \
 
 ## Contrato de API 
 ### Auth
-- `POST /api/auth/register` — register user (ADMIN controlled or public depending on env).  
-- `POST /api/auth/login` — returns JWT `{ token }`.
+- `POST /api/user/register` — register user (ADMIN controlled or public depending on env).  
+- `POST /api/user/login` — returns JWT `{ token }`.
+- `POST /api/user/logout` — remove JWT `{ token }` from the coockie session.
 
 ### Categories
 - `GET /api/categories` — public list (paginated).  

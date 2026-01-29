@@ -52,11 +52,11 @@ public class CartService {
         .filter(Product::getActive)
         .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado ou inativo"));
 
-    CartItems item = cartItemsRepository.findByCartsAndProduct(cart, product)
+    CartItems item = cartItemsRepository.findByCartAndProduct(cart, product)
         .orElse(new CartItems());
 
     if (item.getId() == null) {
-      item.setCarts(cart);
+      item.setCart(cart);
       item.setProduct(product);
       item.setQuantity(dto.quantity());
       item.setCreatedAt(OffsetDateTime.now());
@@ -64,17 +64,17 @@ public class CartService {
       item.setQuantity(item.getQuantity() + dto.quantity());
     }
     if (!product.getActive()) {
-        throw new EntityNotFoundException("Produto inativo");
+      throw new EntityNotFoundException("Produto inativo");
     }
 
     if (product.getStockQuantity() < dto.quantity()) {
-        throw new IllegalArgumentException("Estoque insuficiente");
+      throw new IllegalArgumentException("Estoque insuficiente");
     }
 
     item.setUnitPrice(product.getPriceCents());
     cartItemsRepository.save(item);
 
-    List<CartItems> allItems = cartItemsRepository.findByCarts(cart);
+    List<CartItems> allItems = cartItemsRepository.findByCart(cart);
     return cartMapper.toResponseDTO(cart, allItems);
   }
 
@@ -87,7 +87,7 @@ public class CartService {
     Carts cart = cartsRepository.findById(cartId)
         .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado"));
 
-    List<CartItems> items = cartItemsRepository.findByCarts(cart);
+    List<CartItems> items = cartItemsRepository.findByCart(cart);
 
     return cartMapper.toResponseDTO(cart, items);
   }
@@ -96,23 +96,23 @@ public class CartService {
     Users user = getAuthenticatedUser();
     Carts cart = cartsRepository.findByUser_Id(user.getId())
         .orElseThrow(() -> new EntityNotFoundException("Carrinho vazio ou não encontrado"));
-    List <CartItems> items = cartItemsRepository.findByCarts(cart);
-    return cartMapper.toResponseDTO(cart,items); 
+    List<CartItems> items = cartItemsRepository.findByCart(cart);
+    return cartMapper.toResponseDTO(cart, items);
   }
 
   @Transactional
-  public void clearCart(){
+  public void clearCart() {
     Users user = getAuthenticatedUser();
 
     Carts cart = cartsRepository.findByUser_Id(user.getId())
-            .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado"));
-    cartItemsRepository.deleteByCarts(cart);
+        .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado"));
+    cartItemsRepository.deleteByCart(cart);
 
   }
 
   @Transactional
   public void removeItemFromCart(Long productId) {
     Users user = getAuthenticatedUser();
-    cartItemsRepository.deleteByCarts_User_IdAndProduct_Id(user.getId(), productId);
+    cartItemsRepository.deleteByCart_User_IdAndProduct_Id(user.getId(), productId);
   }
 }

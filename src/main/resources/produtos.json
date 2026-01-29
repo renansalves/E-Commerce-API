@@ -1,0 +1,191 @@
+[
+  {
+    "sku": "ELE-HEADBT-0001",
+    "name": "Fone Bluetooth Over-Ear Noise Cancelling",
+    "categoryId": 1,
+    "priceCents": 39990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 450
+  },
+  {
+    "sku": "ELE-SMRTWCH-0002",
+    "name": "Smartwatch Fitness 44mm",
+    "categoryId": 1,
+    "priceCents": 69990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 320
+  },
+  {
+    "sku": "INF-TECLMEC-0003",
+    "name": "Teclado Mecânico RGB ABNT2",
+    "categoryId": 2,
+    "priceCents": 28990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 220
+  },
+  {
+    "sku": "INF-MOUSE-0004",
+    "name": "Mouse Gamer 16000 DPI",
+    "categoryId": 2,
+    "priceCents": 15990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 600
+  },
+  {
+    "sku": "INF-SSD1TB-0005",
+    "name": "SSD NVMe 1TB Gen4",
+    "categoryId": 2,
+    "priceCents": 42990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 340
+  },
+  {
+    "sku": "CAS-LIQ-0006",
+    "name": "Liquidificador 900W Copo Inox",
+    "categoryId": 3,
+    "priceCents": 24990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 410
+  },
+  {
+    "sku": "CAS-AFRIT-0007",
+    "name": "Fritadeira Elétrica Sem Óleo 4L",
+    "categoryId": 3,
+    "priceCents": 39900,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 195
+  },
+  {
+    "sku": "ESP-BOLA-0008",
+    "name": "Bola de Futebol Campo Oficial",
+    "categoryId": 4,
+    "priceCents": 13990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 520
+  },
+  {
+    "sku": "ESP-BIKE-0009",
+    "name": "Bicicleta MTB Alumínio 29\" 24v",
+    "categoryId": 4,
+    "priceCents": 199990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 48
+  },
+  {
+    "sku": "BEL-SERUM-0010",
+    "name": "Sérum Facial Vitamina C 30ml",
+    "categoryId": 5,
+    "priceCents": 8990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 870
+  },
+  {
+    "sku": "BEL-SEC-0011",
+    "name": "Secador de Cabelo Íon 2000W",
+    "categoryId": 5,
+    "priceCents": 21990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 260
+  },
+  {
+    "sku": "BRI-MONT-0012",
+    "name": "Blocos de Montar 800 peças",
+    "categoryId": 6,
+    "priceCents": 17990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 540
+  },
+  {
+    "sku": "BRI-TAB-0013",
+    "name": "Jogo de Tabuleiro Estratégia Clássica",
+    "categoryId": 6,
+    "priceCents": 12990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 375
+  },
+  {
+    "sku": "LIV-FIC-0014",
+    "name": "Romance de Ficção Científica – Edição Brochura",
+    "categoryId": 7,
+    "priceCents": 6490,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 980
+  },
+  {
+    "sku": "LIV-NF-0015",
+    "name": "Livro de Não-Ficção: Finanças Pessoais",
+    "categoryId": 7,
+    "priceCents": 7990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 760
+  },
+  {
+    "sku": "PAP-CADER-0016",
+    "name": "Caderno Universitário 200 folhas",
+    "categoryId": 8,
+    "priceCents": 2490,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 2100
+  },
+  {
+    "sku": "PAP-CANETA-0017",
+    "name": "Kit 10 Canetas Gel 0.7mm",
+    "categoryId": 8,
+    "priceCents": 1990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 3300
+  },
+  {
+    "sku": "AUT-LIMP-0018",
+    "name": "Limpa Vidros Automotivo 500ml",
+    "categoryId": 9,
+    "priceCents": 2290,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 1250
+  },
+  {
+    "sku": "AUT-CARG-0019",
+    "name": "Carregador Veicular USB-C 45W",
+    "categoryId": 9,
+    "priceCents": 9990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 640
+  },
+  {
+    "sku": "PET-RACAO-0020",
+    "name": "Ração Premium Cães Adultos 10kg",
+    "categoryId": 10,
+    "priceCents": 15990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 380
+  },
+  {
+    "sku": "PET-BEB-0021",
+    "name": "Bebedouro Automático para Gatos 2L",
+    "categoryId": 10,
+    "priceCents": 12990,
+    "currency": "BRL",
+    "active": true,
+    "stockQuantity": 210
+  }
+]

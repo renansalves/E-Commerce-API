@@ -9,15 +9,15 @@ import br.db.tec.e_commerce.domain.cart.CartItems;
 import br.db.tec.e_commerce.domain.cart.Carts;
 import br.db.tec.e_commerce.domain.product.Product;
 
-public interface CartItemsRepository extends JpaRepository<CartItems, Long>{
+public interface CartItemsRepository extends JpaRepository<CartItems, Long> {
 
-    List<CartItems> findByCarts(Carts cart);
+  List<CartItems> findByCart(Carts cart);
 
-    Optional <CartItems> findByCartsAndProduct(Carts cart,
-            Product product);
-    void deleteByCarts_User_IdAndProduct_Id(Long userId, Long productId);
+  Optional<CartItems> findByCartAndProduct(Carts cart,
+      Product product);
 
-    void deleteByCarts(Carts carts);
+  void deleteByCart_User_IdAndProduct_Id(Long userId, Long productId);
 
+  void deleteByCart(Carts cart);
 
 }

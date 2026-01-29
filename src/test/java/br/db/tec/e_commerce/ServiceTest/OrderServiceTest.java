@@ -112,7 +112,7 @@ public class OrderServiceTest {
     item.setUnitPrice(1000L);
 
     when(cartsRepository.findByUser_Id(userId)).thenReturn(Optional.of(cart));
-    when(cartItemsRepository.findByCarts(cart)).thenReturn(List.of(item));
+    when(cartItemsRepository.findByCart(cart)).thenReturn(List.of(item));
     when(ordersRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
     orderService.checkout();
@@ -166,7 +166,7 @@ public class OrderServiceTest {
     cart.setUser(user);
 
     when(cartsRepository.findByUser_Id(user.getId())).thenReturn(Optional.of(cart));
-    when(cartItemsRepository.findByCarts(cart)).thenReturn(Collections.emptyList());
+    when(cartItemsRepository.findByCart(cart)).thenReturn(Collections.emptyList());
 
     CheckoutException ex = assertThrows(CheckoutException.class, () -> orderService.checkout());
     assertEquals("Não é possível finalizar um pedido com o carrinho vazio", ex.getMessage());
@@ -201,7 +201,6 @@ public class OrderServiceTest {
     assertEquals("Não é possível alterar o status de um pedido cancelado.", ex.getMessage());
   }
 
-
   @Test
   @DisplayName("Deve lançar exceção quando usuário tenta acessar pedido de outro")
   void getOrderDetailsAccessDenied() {
@@ -223,29 +222,28 @@ public class OrderServiceTest {
   @Test
   @DisplayName("Deve retornar detalhes do pedido quando o usuário for o dono")
   void getOrderDetailsSuccess() {
-      Orders order1 = new Orders();
-      order1.setId(10L);
-      order1.setUser(mockUser);
+    Orders order1 = new Orders();
+    order1.setId(10L);
+    order1.setUser(mockUser);
 
-      OrderResponseDTO responseDTO = new OrderResponseDTO(
-              10L,
-              OrderStatus.PENDING,
-              2000L,
-              OffsetDateTime.now(),
-              Collections.emptyList()
-      );
+    OrderResponseDTO responseDTO = new OrderResponseDTO(
+        10L,
+        OrderStatus.PENDING,
+        2000L,
+        OffsetDateTime.now(),
+        Collections.emptyList());
 
-      when(ordersRepository.findByUser_IdOrderByCreatedAtDesc(mockUser.getId()))
-              .thenReturn(List.of(order1));
+    when(ordersRepository.findByUser_IdOrderByCreatedAtDesc(mockUser.getId()))
+        .thenReturn(List.of(order1));
 
-      when(orderMapper.toResponseDTO(any(Orders.class), anyList()))
-              .thenReturn(responseDTO);
+    when(orderMapper.toResponseDTO(any(Orders.class), anyList()))
+        .thenReturn(responseDTO);
 
-      List<OrderResponseDTO> result = orderService.listMyOrders();
+    List<OrderResponseDTO> result = orderService.listMyOrders();
 
-      assertNotNull(result);
-      assertEquals(1, result.size());
-      assertEquals(10L, result.get(0).id());
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(10L, result.get(0).id());
 
   }
 

@@ -59,7 +59,7 @@ class CartItemsRepositoryTest {
     entityManager.flush();
 
     CartItems item = new CartItems();
-    item.setCarts(cart);
+    item.setCart(cart);
     item.setProduct(product);
     item.setQuantity(2);
     item.setUnitPrice(1000L);
@@ -68,7 +68,7 @@ class CartItemsRepositoryTest {
     CartItems savedItem = cartItemsRepository.save(item);
 
     assertThat(savedItem.getId()).isNotNull();
-    assertThat(savedItem.getCarts().getId()).isEqualTo(cart.getId());
+    assertThat(savedItem.getCart().getId()).isEqualTo(cart.getId());
     assertThat(savedItem.getProduct().getSku()).isEqualTo("CART-PROD-01");
   }
 }

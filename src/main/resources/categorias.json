@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Eletrônicos",
+    "description": "Dispositivos eletrônicos e acessórios"
+  },
+  {
+    "name": "Informática",
+    "description": "Computadores, periféricos e componentes"
+  },
+  {
+    "name": "Casa e Cozinha",
+    "description": "Eletroportáteis e utensílios domésticos"
+  },
+  {
+    "name": "Esporte e Lazer",
+    "description": "Equipamentos esportivos e recreação"
+  },
+  {
+    "name": "Beleza e Cuidados Pessoais",
+    "description": "Cosméticos, higiene e bem-estar"
+  },
+  {
+    "name": "Brinquedos",
+    "description": "Jogos e brinquedos para todas as idades"
+  },
+  {
+    "name": "Livros",
+    "description": "Livros físicos de diversos gêneros"
+  },
+  {
+    "name": "Papelaria",
+    "description": "Materiais de escritório e estudo"
+  },
+  {
+    "name": "Automotivo",
+    "description": "Acessórios e cuidados para veículos"
+  },
+  {
+    "name": "Pet Shop",
+    "description": "Produtos para animais de estimação"
+  }
+]

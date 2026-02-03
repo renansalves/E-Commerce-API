@@ -3,7 +3,6 @@ package br.db.tec.e_commerce.domain.cart;
 import java.time.OffsetDateTime;
 
 import br.db.tec.e_commerce.domain.product.Product;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,10 +17,7 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Entity
-@Table(
-  name = "cart_items",
-  schema = "ecommerce"
-)
+@Table(name = "cart_items", schema = "ecommerce")
 @Data
 public class CartItems {
 
@@ -29,20 +25,12 @@ public class CartItems {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(
-      name ="cart_id",
-      nullable = false,
-      foreignKey = @ForeignKey(name = "fk_carts_id")
-      )
-  private Carts carts;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "cart_id", nullable = false, foreignKey = @ForeignKey(name = "fk_carts_id"))
+  private Carts cart;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name ="product_id",
-      nullable = false,
-      foreignKey = @ForeignKey(name = "fk_product_id")
-      )
+  @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_id"))
   private Product product;
 
   @Min(0)
@@ -50,10 +38,7 @@ public class CartItems {
   private int quantity;
 
   @Min(0)
-  @Column(
-  name = "unit_price_snapshot",
-  nullable = false
-  )
+  @Column(name = "unit_price_snapshot", nullable = false)
   private Long unitPrice;
 
   @Column(columnDefinition = "TIMESTAMPTZ")

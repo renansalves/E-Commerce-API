@@ -101,126 +101,130 @@ class CartServiceTest {
   @Test
   @DisplayName("Deve lançar exceção se o produto estiver inativo")
   void shouldThrowExceptionWhenProductInactive() {
-      CartItemRequestDTO dto = new CartItemRequestDTO(99L, 1);
-      Product inactiveProduct = new Product();
-      inactiveProduct.setId(99L);
-      inactiveProduct.setActive(false);
+    CartItemRequestDTO dto = new CartItemRequestDTO(99L, 1);
+    Product inactiveProduct = new Product();
+    inactiveProduct.setId(99L);
+    inactiveProduct.setActive(false);
 
-      when(productRepository.findById(99L)).thenReturn(Optional.of(inactiveProduct));
+    when(productRepository.findById(99L)).thenReturn(Optional.of(inactiveProduct));
 
-      EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-              () -> cartService.addItemToCart(dto));
+    EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+        () -> cartService.addItemToCart(dto));
 
-      assertEquals("Produto não encontrado ou inativo", exception.getMessage());
+    assertEquals("Produto não encontrado ou inativo", exception.getMessage());
 
-      verify(cartItemsRepository, times(0)).save(any());
+    verify(cartItemsRepository, times(0)).save(any());
   }
 
   @Test
   @DisplayName("Deve lançar exceção se a quantidade solicitada for maior que o stock")
   void shouldThrowExceptionWhenInsufficientStock() {
-    CartItemRequestDTO dto = new CartItemRequestDTO(10L, 100); 
+    CartItemRequestDTO dto = new CartItemRequestDTO(10L, 100);
     Product product = new Product();
     product.setId(10L);
     product.setActive(true);
     product.setStockQuantity(10);
 
-      when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+    when(productRepository.findById(10L)).thenReturn(Optional.of(product));
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-              () -> cartService.addItemToCart(dto));
+        () -> cartService.addItemToCart(dto));
 
-      verify(cartItemsRepository, times(0)).save(any(CartItems.class));
-      assertTrue(exception.getMessage().contains("Estoque insuficiente"));
+    verify(cartItemsRepository, times(0)).save(any(CartItems.class));
+    assertTrue(exception.getMessage().contains("Estoque insuficiente"));
   }
-    @Test
-    @DisplayName("Deve incrementar a quantidade de um item se ele já existir no carrinho")
-    void shouldIncrementQuantityWhenItemAlreadyInCart() {
-        CartItemRequestDTO dto = new CartItemRequestDTO(10L, 2);
-        Product product = new Product();
-        product.setId(10L);
-        product.setActive(true);
-        product.setStockQuantity(10);
-        product.setPriceCents(1000L);
 
-        Carts cart = new Carts();
-        CartItems existingItem = new CartItems();
-        existingItem.setId(1L);
-        existingItem.setQuantity(3);
-        existingItem.setProduct(product);
+  @Test
+  @DisplayName("Deve incrementar a quantidade de um item se ele já existir no carrinho")
+  void shouldIncrementQuantityWhenItemAlreadyInCart() {
+    CartItemRequestDTO dto = new CartItemRequestDTO(10L, 2);
+    Product product = new Product();
+    product.setId(10L);
+    product.setActive(true);
+    product.setStockQuantity(10);
+    product.setPriceCents(1000L);
 
-        when(cartsRepository.findByUser_Id(anyLong())).thenReturn(Optional.of(cart));
-        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
-        when(cartItemsRepository.findByCartsAndProduct(cart, product)).thenReturn(Optional.of(existingItem));
+    Carts cart = new Carts();
+    CartItems existingItem = new CartItems();
+    existingItem.setId(1L);
+    existingItem.setQuantity(3);
+    existingItem.setProduct(product);
 
-        // Configurando o retorno do Record para evitar NullPointerException
-        CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 5000L);
-        when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
+    when(cartsRepository.findByUser_Id(anyLong())).thenReturn(Optional.of(cart));
+    when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+    when(cartItemsRepository.findByCartAndProduct(cart, product)).thenReturn(Optional.of(existingItem));
 
-        cartService.addItemToCart(dto);
+    // Configurando o retorno do Record para evitar NullPointerException
+    CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 5000L);
+    when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
 
-        assertEquals(5, existingItem.getQuantity()); // 3 pré-existentes + 2 do DTO
-        verify(cartItemsRepository).save(existingItem);
-    }
-    @Test
-    @DisplayName("Deve retornar detalhes de um carrinho específico por ID")
-    void shouldGetCartDetailed() {
-        Carts cart = new Carts();
-        cart.setId(1L);
-        when(cartsRepository.findById(1L)).thenReturn(Optional.of(cart));
-        when(cartItemsRepository.findByCarts(cart)).thenReturn(new ArrayList<>());
+    cartService.addItemToCart(dto);
 
-        CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 0L);
-        when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
+    assertEquals(5, existingItem.getQuantity()); // 3 pré-existentes + 2 do DTO
+    verify(cartItemsRepository).save(existingItem);
+  }
 
-        CartResponseDTO result = cartService.getCartDetailed(1L);
+  @Test
+  @DisplayName("Deve retornar detalhes de um carrinho específico por ID")
+  void shouldGetCartDetailed() {
+    Carts cart = new Carts();
+    cart.setId(1L);
+    when(cartsRepository.findById(1L)).thenReturn(Optional.of(cart));
+    when(cartItemsRepository.findByCart(cart)).thenReturn(new ArrayList<>());
 
-        assertNotNull(result);
-        verify(cartsRepository).findById(1L);
-    }
+    CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 0L);
+    when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
 
-    @Test
-    @DisplayName("Deve retornar o carrinho do usuário autenticado")
-    void shouldGetCurrentCart() {
-        Carts cart = new Carts();
-        when(cartsRepository.findByUser_Id(mockUser.getId())).thenReturn(Optional.of(cart));
+    CartResponseDTO result = cartService.getCartDetailed(1L);
 
-        CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 0L);
-        when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
+    assertNotNull(result);
+    verify(cartsRepository).findById(1L);
+  }
 
-        CartResponseDTO result = cartService.getCurrentCart();
+  @Test
+  @DisplayName("Deve retornar o carrinho do usuário autenticado")
+  void shouldGetCurrentCart() {
+    Carts cart = new Carts();
+    when(cartsRepository.findByUser_Id(mockUser.getId())).thenReturn(Optional.of(cart));
 
-        assertNotNull(result);
-    }
-    @Test
-    @DisplayName("Deve limpar todos os itens do carrinho do usuário")
-    void shouldClearCart() {
-        Carts cart = new Carts();
-        when(cartsRepository.findByUser_Id(mockUser.getId())).thenReturn(Optional.of(cart));
+    CartResponseDTO mockResponse = new CartResponseDTO(1L, new ArrayList<>(), 0L);
+    when(cartMapper.toResponseDTO(any(), any())).thenReturn(mockResponse);
 
-        cartService.clearCart();
+    CartResponseDTO result = cartService.getCurrentCart();
 
-        verify(cartItemsRepository).deleteByCarts(cart);
-    }
+    assertNotNull(result);
+  }
 
-    @Test
-    @DisplayName("Deve remover um item específico do carrinho")
-    void shouldRemoveItemFromCart() {
-        Long productId = 10L;
+  @Test
+  @DisplayName("Deve limpar todos os itens do carrinho do usuário")
+  void shouldClearCart() {
+    Carts cart = new Carts();
+    when(cartsRepository.findByUser_Id(mockUser.getId())).thenReturn(Optional.of(cart));
 
-        cartService.removeItemFromCart(productId);
+    cartService.clearCart();
 
-        verify(cartItemsRepository).deleteByCarts_User_IdAndProduct_Id(mockUser.getId(), productId);
-    }
-    @Test
-    @DisplayName("Deve lançar exceção ao buscar carrinho atual de usuário sem carrinho")
-    void shouldThrowExceptionWhenUserHasNoCart() {
-        // mockUser.getId() é 1L conforme seu setUp
-        when(cartsRepository.findByUser_Id(1L)).thenReturn(Optional.empty());
+    verify(cartItemsRepository).deleteByCart(cart);
+  }
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
-                () -> cartService.getCurrentCart());
+  @Test
+  @DisplayName("Deve remover um item específico do carrinho")
+  void shouldRemoveItemFromCart() {
+    Long productId = 10L;
 
-        assertEquals("Carrinho vazio ou não encontrado", ex.getMessage());
-    }
+    cartService.removeItemFromCart(productId);
+
+    verify(cartItemsRepository).deleteByCart_User_IdAndProduct_Id(mockUser.getId(), productId);
+  }
+
+  @Test
+  @DisplayName("Deve lançar exceção ao buscar carrinho atual de usuário sem carrinho")
+  void shouldThrowExceptionWhenUserHasNoCart() {
+    // mockUser.getId() é 1L conforme seu setUp
+    when(cartsRepository.findByUser_Id(1L)).thenReturn(Optional.empty());
+
+    EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+        () -> cartService.getCurrentCart());
+
+    assertEquals("Carrinho vazio ou não encontrado", ex.getMessage());
+  }
 }

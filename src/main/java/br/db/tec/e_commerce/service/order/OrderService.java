@@ -52,7 +52,7 @@ public class OrderService {
       Carts cart = cartsRepository.findByUser_Id(currentUser.getId())
           .orElseThrow(() -> new EntityNotFoundException("Carrinho não encontrado para este usuário"));
 
-      List<CartItems> cartItems = cartItemsRepository.findByCarts(cart);
+      List<CartItems> cartItems = cartItemsRepository.findByCart(cart);
 
       if (cartItems.isEmpty()) {
         throw new CheckoutException("Não é possível finalizar um pedido com o carrinho vazio");

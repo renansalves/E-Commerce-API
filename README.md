@@ -164,6 +164,7 @@ curl -X POST http://localhost:8080/api/admin/products \
 ### Auth
 - `POST /api/auth/register` — register user (ADMIN controlled or public depending on env).  
 - `POST /api/auth/login` — returns JWT `{ token }`.
+- `POST /api/auth/logout` — remove JWT `{ token }`.
 
 ### Categories
 - `GET /api/categories` — public list (paginated).  

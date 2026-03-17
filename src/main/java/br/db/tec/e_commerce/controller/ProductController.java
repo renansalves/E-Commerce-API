@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.db.tec.e_commerce.dto.product.ProductRequestDTO;
@@ -27,49 +28,45 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class ProductController {
 
-  @Autowired 
+  @Autowired
   ProductService productService;
   @Autowired
   ProductMapper productMapper;
 
   @GetMapping("/products")
   @PageableAsQueryParam
-  @Operation(
-  summary = "Lista todos os produtos",
-  description = "Lista todos os produtos cadastrados, ativos e inativos."
-  )
-  public ResponseEntity<Page<ProductResponseDTO>> ListAllProducts(@Parameter(hidden = true) Pageable pageable) {
-   Page<ProductResponseDTO> products = productService.listAll(pageable);
-   return ResponseEntity.ok(products);
+  @Operation(summary = "Lista produtos com filtros", description = "Filtra por categoria, faixa de preço (em centavos), disponibilidade, status e texto livre; suporta paginação e ordenação.")
+  public ResponseEntity<Page<ProductResponseDTO>> listProducts(
+      @RequestParam(required = false) Long categoryId,
+      @RequestParam(required = false, defaultValue = "0") Long minPriceCents,
+      @RequestParam(required = false) Long maxPriceCents,
+      @RequestParam(required = false) Boolean active,
+      @RequestParam(required = false) Boolean inStock,
+      @RequestParam(required = false, name = "q") String query,
+      @Parameter(hidden = true) Pageable pageable) {
+    Page<ProductResponseDTO> products = productService.listAll(
+        categoryId, minPriceCents, maxPriceCents, active, inStock, query, pageable);
+    return ResponseEntity.ok(products);
   }
 
   @GetMapping("/products/{id}")
-  @Operation(
-  summary = "Lista produtos",
-  description = "Lista um produto pelo seu id."
-  )
-  public ResponseEntity<ProductResponseDTO> getProducts(@PathVariable Long id){
+  @Operation(summary = "Lista produtos", description = "Lista um produto pelo seu id.")
+  public ResponseEntity<ProductResponseDTO> getProducts(@PathVariable Long id) {
     ProductResponseDTO product = productService.findByIdAndActive(id);
-    return ResponseEntity.status(HttpStatus.FOUND).body(product);
+    return ResponseEntity.ok(product);
   }
-
 
   @PostMapping("/admin/products")
-  @Operation(
-  summary = "Criar Produto",
-  description = "Adiciona um novo produto na tabela de produtos."
-  )
-  public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO dto){
-   ProductResponseDTO savedProduct = productService.create(dto);
-   return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+  @Operation(summary = "Criar Produto", description = "Adiciona um novo produto na tabela de produtos.")
+  public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO dto) {
+    ProductResponseDTO savedProduct = productService.create(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
   }
-  
+
   @PutMapping("/admin/products/{id}")
-  @Operation(
-  summary = "Modifica um produto",
-  description = "Modifica um produto existente, atravez de um id valido."
-  )
-  public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequestDTO dto){
+  @Operation(summary = "Modifica um produto", description = "Modifica um produto existente, atravez de um id valido.")
+  public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id,
+      @RequestBody @Valid ProductRequestDTO dto) {
 
     ProductResponseDTO updatedProduct = productService.update(id, dto);
     return ResponseEntity.ok(updatedProduct);
@@ -77,11 +74,8 @@ public class ProductController {
   }
 
   @DeleteMapping("/admin/products/{id}")
-  @Operation(
-  summary = "Remove um produto",
-  description = "Remove um produto existente e com id valido."
-  )
-  public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
+  @Operation(summary = "Remove um produto", description = "Remove um produto existente e com id valido.")
+  public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
     productService.deactivateProduct(id);
     return ResponseEntity.noContent().build();
   }

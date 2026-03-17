@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import br.db.tec.e_commerce.domain.category.Category;
@@ -29,12 +30,12 @@ public class ProductService {
   @Autowired
   private ProductMapper productMapper;
 
-  @Autowired 
+  @Autowired
   private CategoryRepository categoryRepository;
 
   public ProductResponseDTO create(ProductRequestDTO dto) {
-    Category category = categoryRepository.findById(dto.categoryId()).
-      orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+    Category category = categoryRepository.findById(dto.categoryId())
+        .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
 
     Product product = productMapper.toEntity(dto);
     product.setCategory(category);
@@ -48,8 +49,44 @@ public class ProductService {
     return productMapper.toResponseDTO(productRepository.save(product));
   }
 
-  public Page<ProductResponseDTO> listAll(Pageable pageable) {
-    return productRepository.findAll(pageable)
+  public Page<ProductResponseDTO> listAll(
+      Long categoryId,
+      Long minPriceCents,
+      Long maxPriceCents,
+      Boolean active,
+      Boolean inStock,
+      String query,
+      Pageable pageable) {
+    Specification<Product> spec = Specification.where(null);
+
+    if (categoryId != null) {
+      spec = spec.and((root, q, cb) -> cb.equal(root.get("category").get("id"), categoryId));
+    }
+
+    if (minPriceCents != null && minPriceCents >= 0) {
+      spec = spec.and((root, q, cb) -> cb.greaterThanOrEqualTo(root.get("priceCents"), minPriceCents));
+    }
+
+    if (maxPriceCents != null && maxPriceCents >= 0) {
+      spec = spec.and((root, q, cb) -> cb.lessThanOrEqualTo(root.get("priceCents"), maxPriceCents)); // <= CORRETO
+    }
+
+    if (active != null) {
+      spec = spec.and((root, q, cb) -> cb.equal(root.get("active"), active));
+    }
+
+    if (inStock != null && inStock) {
+      spec = spec.and((root, q, cb) -> cb.greaterThan(root.get("stockQuantity"), 0));
+    }
+
+    if (query != null && !query.isBlank()) {
+      String like = "%" + query.trim().toLowerCase() + "%";
+      spec = spec.and((root, q, cb) -> cb.or(
+          cb.like(cb.lower(root.get("name")), like),
+          cb.like(cb.lower(root.get("description")), like)));
+    }
+
+    return productRepository.findAll(spec, pageable)
         .map(productMapper::toResponseDTO);
   }
 
